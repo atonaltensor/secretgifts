@@ -239,6 +239,100 @@ Santa draw.
    email, sign-up and privacy handling as described in #4.
 5. **Groups:** only admins can create them (#5).
 
+## Deploying to the NAS
+
+The live site is **https://www.doucettes.org**, running on the Synology NAS with Container Manager.
+`docker-compose.yaml` builds the image from this checkout, runs it as `wishlist-prod` on port 3280,
+and sets `ORIGIN` to the live address. The NAS's reverse proxy handles HTTPS.
+
+**Files that aren't in git.** Copy these to the NAS by hand. They hold real names, so they never go
+in the repo or the image:
+
+- `family.json`: the households and family members for `pnpm family:setup` (#4).
+- `images/christmas_avatars/`: one picture per family member, named after their list (`emma.svg`,
+  `emma.png`, …). Lists without a matching picture keep their icon. Pictures are read while the app
+  runs, so adding one later needs no rebuild (browsers may cache the old one for up to an hour).
+
+**First-time setup.**
+
+1. **DNS and router:** point `www.doucettes.org` at your home's public IP (or a Synology DDNS name),
+   and forward ports 80 and 443 on the router to the NAS.
+2. **Certificate:** Control Panel → Security → Certificate → Add → Let's Encrypt, for
+   `www.doucettes.org`.
+3. **Reverse proxy:** Control Panel → Login Portal → Advanced → Reverse Proxy → Create.
+   Source: HTTPS, `www.doucettes.org`, port 443. Destination: HTTP, `localhost`, port 3280. Then
+   assign the certificate to this hostname under Certificate → Settings.
+4. **Code and private files:** clone the repo to the NAS (e.g. `/volume1/docker/secretgifts`) and
+   copy in `family.json` and `images/christmas_avatars/`.
+5. **Build and start** (over SSH, in that folder): `sudo docker compose up -d --build`. The first
+   build takes a while on a NAS. The NAS has an Intel Celeron J3455, which suits the Dockerfile:
+   it targets plain `x86-64` with AVX turned off, which that CPU lacks. If the build runs out of
+   memory, build on another machine instead, copy the image over, and start it without `--build`:
+
+    ```sh
+    docker buildx build --platform linux/amd64 -t secretgifts:prod .
+    docker save secretgifts:prod | ssh <nas> sudo docker load
+    # then on the NAS:
+    sudo docker compose up -d
+    ```
+
+6. **Create the households** with the `family:setup` commands in #4, and save the temporary
+   passwords it prints. They're shown only once.
+7. **Check:** open https://www.doucettes.org, log in as the admin household, and click through.
+
+**The address must match.** Logins and forms only work at the exact `ORIGIN` address. If people might
+type `doucettes.org` without `www`, set up a redirect to `https://www.doucettes.org` at the DNS
+provider rather than serving the site on both names.
+
+**Updating.** `git pull && sudo docker compose up -d --build`. The database and uploads live in
+`./data` and `./uploads` next to the compose file, so they survive rebuilds. Include those two
+folders in the NAS's backups (e.g. Hyper Backup).
+
+### Later: deploy with Container Manager alone (not done yet)
+
+The steps above need SSH and a copy of the repo on the NAS. The usual Synology way is to create a
+Container Manager **Project** and upload just a `docker-compose.yaml`. Two changes would allow that.
+
+**1. Let GitHub build the image.** Container Manager can download images from a registry, or import
+a `.tar` file, but can't easily build from source. The repo already has
+`.github/workflows/build_push.yml` from upstream. It still points at the upstream owner's Docker Hub
+and GHCR accounts, so as it stands it would fail or push to the wrong place. Change it to:
+
+- **Publish to:** `ghcr.io/atonaltensor/secretgifts`, dropping Docker Hub. It uses GitHub's built-in
+  token, so no secrets need setting up.
+- **Build for:** Intel only (`linux/amd64`), for the NAS's J3455. That's faster than also building for ARM.
+- **When:** on every push to `main`, or when started manually.
+
+`docker-compose.yaml` then says `image: ghcr.io/atonaltensor/secretgifts:main`, with no `build:`.
+To update the NAS: push to `main`, then in Container Manager stop the project, pull the new image
+and start it again.
+
+- **Privacy:** the image holds no family data, because `.dockerignore` keeps out `family.json`, the
+  seed data and the avatars. It does include the site title with the family surname, which is
+  already OK for the public repo. The image can be made private on GitHub, but then the NAS has to
+  log in to `ghcr.io` with a GitHub token. Public is simpler.
+- **Without GitHub:** build the image on the Mac
+  (`docker buildx build --platform linux/amd64 -t secretgifts:prod .`), export it with
+  `docker save -o secretgifts.tar secretgifts:prod`, and import it under Container Manager → Image →
+  Import. That works, but has to be repeated for every update.
+
+**2. Run `family:setup` automatically on start.** The script is safe to re-run: it skips households
+and lists that already exist and never overwrites changes made in the app. Add one step to
+`entrypoint.sh`, after the migrations and patches:
+
+- **When it runs:** only if `family.json` is mounted into the container (from next to the compose
+  file on the NAS). The e2e tests and anyone else using the image are unaffected.
+- **If it fails:** the error goes to the log and the site still starts. A typo in `family.json`
+  shouldn't take the site down.
+- **Adding someone later:** edit `family.json` on the NAS and restart the project.
+- **Catch:** the temporary passwords are printed once, on the first start, to the container log
+  (Container Manager → Project → Container → Log). Copy them from there. They stay in the log until
+  the container is recreated, and households should change their password after first login anyway.
+
+**Resulting setup on the NAS:** create a project folder, put `docker-compose.yaml`, `family.json` and
+`images/christmas_avatars/` in it, create the project in Container Manager, then read the passwords
+from the log. DNS, the certificate and the reverse proxy (steps 1–3 above) stay the same.
+
 ## Implementation notes
 
 - Keep changes small and in few places (theme file, `en.json`, a few components) to ease

@@ -1,11 +1,26 @@
+# Production: https://www.doucettes.org on the Synology NAS. See docs/christmas-plan.md, "Deploying to the NAS".
+#
+#   docker compose up -d --build
+#
+# Builds the image from this checkout (the upstream ghcr.io/cmintey/wishlist image has none of the
+# Christmas changes). The NAS's reverse proxy terminates HTTPS and forwards to port 3280.
 services:
     app:
-        container_name: wishlist-app
-        image: ghcr.io/cmintey/wishlist
+        container_name: wishlist-prod
+        build: .
+        image: secretgifts:prod
+        restart: unless-stopped
         ports:
             - 3280:3280
         volumes:
-            - ./uploads:/usr/src/app/uploads
             - ./data:/usr/src/app/data
-        env_file:
-            - .env
+            - ./uploads:/usr/src/app/uploads
+            # Real family avatars, matched to list names. Not in git or the image; copy them to the NAS.
+            - ./images/christmas_avatars:/usr/src/app/images/christmas_avatars:ro
+        environment:
+            # Must be the exact address people visit, or logins and forms are rejected.
+            ORIGIN: https://www.doucettes.org
+            TOKEN_TIME: 72
+            DEFAULT_CURRENCY: USD
+            LOG_LEVEL: info
+            MAX_IMAGE_SIZE: 5000000
