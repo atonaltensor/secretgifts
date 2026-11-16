@@ -18,6 +18,7 @@
         <li>{$t("wishes.household-intro-own")}</li>
         <li>{$t("wishes.household-intro-claim")}</li>
     </ul>
+    <p class="mt-2 text-sm opacity-75">{$t("wishes.household-intro-tip")}</p>
 {/snippet}
 
 {#if firstVisit}
