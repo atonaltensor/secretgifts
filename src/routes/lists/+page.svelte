@@ -50,7 +50,11 @@
         <p class="text-2xl">{$t("wishes.no-lists-yet")}</p>
     </div>
 {:else}
-    <div class="flex flex-col space-y-4" data-testid="list-container" in:fade>
+    <div
+        class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4 2xl:grid-cols-5"
+        data-testid="list-container"
+        in:fade
+    >
         {#each data.myLists as list (list.id)}
             <ListCard hideCount {list} />
         {/each}

@@ -221,7 +221,9 @@
         <div class="col-span-full">
             <div class="flex flex-col space-y-2">
                 <span>{$t("wishes.preview")}</span>
-                <ListCard hideCount {list} preventNavigate />
+                <div class="w-44 md:w-52">
+                    <ListCard hideCount {list} preventNavigate />
+                </div>
             </div>
         </div>
     </div>
