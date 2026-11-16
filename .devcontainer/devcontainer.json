@@ -49,12 +49,15 @@
 
     "postCreateCommand": "bash .devcontainer/post-create.sh",
 
-    "forwardPorts": [5173, 4173, 3280],
-    "portsAttributes": {
-        "5173": { "label": "Vite dev server (pnpm dev)", "onAutoForward": "notify" },
-        "4173": { "label": "Vite preview", "onAutoForward": "silent" },
-        "3280": { "label": "Wishlist (production / e2e)", "onAutoForward": "silent" }
-    },
+    // No VS Code port forwarding. With --network=host on OrbStack, ports
+    // bound here (5173 dev, 4173 preview, 3280 prod/e2e) are already reachable
+    // at localhost on the Mac. Forwarding them also creates a loop: while
+    // nothing is listening yet (e.g. Playwright polling 3280 during app
+    // startup), localhost:<port> in the container falls through to the Mac's
+    // localhost, where VS Code's forwarder relays it back into the container
+    // by spawning a `node -e` helper. That repeats ~20x/s until the VM runs
+    // out of memory.
+    "otherPortsAttributes": { "onAutoForward": "ignore" },
 
     "customizations": {
         "vscode": {
@@ -70,6 +73,7 @@
                 "vunguyentuan.vscode-postcss"
             ],
             "settings": {
+                "remote.autoForwardPorts": false,
                 "editor.formatOnSave": true,
                 "editor.defaultFormatter": "esbenp.prettier-vscode",
                 "terminal.integrated.defaultProfile.linux": "bash"
