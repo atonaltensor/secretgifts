@@ -35,7 +35,7 @@
 
 <div class="bg-surface-200-800 flex gap-4 px-4 py-2 md:py-4">
     <!-- Header -->
-    <div class="flex shrink-0 grow content-center items-center gap-x-2 md:grow-0">
+    <div class="flex min-w-0 grow content-center items-center gap-x-2 md:grow-0">
         {#if user}
             {#if !$isInstalled}
                 <NavigationDrawer {navItems} {user}>

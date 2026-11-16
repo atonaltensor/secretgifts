@@ -179,6 +179,20 @@ The setup script applies these settings. They're listed here for reference:
 The family uses English, so the "Language" option in the avatar menu (`NavMenu.svelte`) is hidden
 from non-admins. UI only: the language is just a display preference, so the server isn't locked down.
 
+### 8. Festive login page ✅
+
+The login page (`src/routes/login/+page.svelte`) is the first thing everyone sees, so it gets some whimsy:
+
+- Snowfall (same component and on/off preference as the home page).
+- Festive wording: heading _"Who's knocking at the North Pole? 🎅"_, button _"Let me in! 🎄"_, username label
+  _"Your household's username"_.
+- A random greeting on each visit, e.g. _"The cocoa's ready. Come on in!"_
+- Wrong password: _"Hmm, the elves don't recognize that one 🧝"_. While signing in: _"Checking the list… twice…"_
+- A string of twinkling lights along the top of the login card (still when reduced motion is on).
+- A snowman sitting on the card who covers his eyes while you type your password, and peeks with one eye when
+  you press "show password".
+- **Nothing on this page names a household or family member**, because it's visible to anyone with the URL.
+
 ### Not in scope (parked ideas)
 
 Shopping list totals, a printable shopping list, a gift-wrapped look for bought items, and a Secret

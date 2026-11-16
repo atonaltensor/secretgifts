@@ -8,7 +8,7 @@ import { createUser } from "../util";
 test("unauthenticated", async ({ anonymousPage: page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "Sign In" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /North Pole/ })).toBeVisible();
 });
 
 test("admin authenticated", async ({ adminPage: page }) => {

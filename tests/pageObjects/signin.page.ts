@@ -11,10 +11,10 @@ export class SigninPage extends BasePage {
 
     constructor(page: Page) {
         super(page, "/login");
-        this.header = page.getByRole("heading", { name: "Sign In" });
-        this.usernameField = page.getByLabel("Username");
+        this.header = page.getByRole("heading", { name: /North Pole/ });
+        this.usernameField = page.getByLabel("Your household's username");
         this.passwordField = page.getByLabel("Password", { exact: true });
-        this.submitButton = page.getByRole("button", { name: "Sign in" });
+        this.submitButton = page.getByRole("button", { name: /Let me in/ });
     }
 
     async at() {

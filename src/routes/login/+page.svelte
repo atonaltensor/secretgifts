@@ -9,13 +9,30 @@
     import { getFormatter } from "$lib/i18n";
     import { resolve } from "$app/paths";
     import { toaster } from "$lib/components/toaster";
+    import { LocalStorage } from "$lib/local-storage.svelte";
+    import Snowfall from "$lib/components/christmas/Snowfall.svelte";
+    import StringLights from "$lib/components/christmas/StringLights.svelte";
+    import PeekingSnowman, { type SnowmanMood } from "$lib/components/christmas/PeekingSnowman.svelte";
 
     const { data, form }: PageProps = $props();
     const t = getFormatter();
 
+    // Christmas whimsy (docs/christmas-plan.md #8): snow, a random greeting, and a snowman
+    // who covers his eyes while you type your password.
+    const snow = new LocalStorage("snowfall", true);
+    const GREETINGS = 4;
+    let greeting = $state(1);
+    let greetingReady = $state(false);
+    let passwordFocused = $state(false);
+    let passwordVisible = $state(false);
+    const snowmanMood: SnowmanMood = $derived(passwordVisible ? "peeking" : passwordFocused ? "hiding" : "watching");
+
     let signingIn = $state(false);
     let oAuthError: Record<string, string> | undefined = $state();
     onMount(async () => {
+        // Picked in the browser so the server-rendered page and hydration agree.
+        greeting = 1 + Math.floor(Math.random() * GREETINGS);
+        greetingReady = true;
         if (data.isCallback) {
             const resp = await fetch("/login/oidc/callback", {
                 method: "POST",
@@ -35,11 +52,24 @@
     });
 </script>
 
+{#if snow.current}
+    <Snowfall />
+{/if}
+
 <div class="flex flex-col items-center space-y-4">
-    <h1 class="h1 capitalize">{$t("auth.sign-in")}</h1>
+    <h1 class="h2 text-center">{$t("auth.login-heading")}</h1>
+    <p
+        class={[
+            "text-tertiary-700-300 text-center text-lg transition-opacity duration-500",
+            !greetingReady && "opacity-0"
+        ]}
+        data-testid="login-greeting"
+    >
+        {$t(`auth.login-greeting-${greeting}`)}
+    </p>
 
     <form
-        class="w-80"
+        class="relative mt-24 w-80"
         method="POST"
         use:enhance={(form) => {
             signingIn = true;
@@ -55,6 +85,8 @@
             };
         }}
     >
+        <PeekingSnowman class="absolute right-4 bottom-[calc(100%-0.5rem)] z-10 w-[5.5rem]" mood={snowmanMood} />
+        <StringLights />
         <div
             class="rounded-container card preset-filled-surface-100-900 border-surface-200-800 flex flex-col space-y-4 border p-4"
         >
@@ -66,7 +98,7 @@
             {:else}
                 {#if data.enableLogin}
                     <label class="label" for="username">
-                        <span>{$t("auth.username")}</span>
+                        <span>{$t("auth.login-username")}</span>
                         <input
                             id="username"
                             name="username"
@@ -89,12 +121,15 @@
                             name="password"
                             error={form?.incorrect || form?.error}
                             label={$t("auth.password")}
+                            onblur={() => (passwordFocused = false)}
+                            onfocus={() => (passwordFocused = true)}
                             required
+                            bind:visible={passwordVisible}
                         />
 
                         {#if form?.incorrect}
                             <span class="text-invalid">
-                                {$t("errors.invalid-credentials")}
+                                {$t("auth.login-invalid")}
                             </span>
                         {/if}
                         {#if form?.errors?.password}
@@ -104,11 +139,13 @@
                         {/if}
 
                         <div class="flex items-center justify-center gap-x-4">
-                            <button class="preset-filled-primary-500 btn w-min" disabled={signingIn}>
+                            <button class="preset-filled-primary-500 btn whitespace-nowrap" disabled={signingIn}>
                                 {#if signingIn}
                                     <span class="loading loading-spinner loading-xs"></span>
+                                    <span>{$t("auth.login-checking")}</span>
+                                {:else}
+                                    <span>{$t("auth.login-button")}</span>
                                 {/if}
-                                <span>{$t("auth.sign-in")}</span>
                             </button>
                             {#if data.enableSignup}
                                 <a class="anchor" href="/signup">{$t("auth.create-an-account")}</a>

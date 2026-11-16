@@ -15,7 +15,7 @@ test("public non-registry list", async ({ page, userData, anonymousPage }) => {
 
     // Navigate to the list in a private window
     await anonymousPage.goto(page.url());
-    await expect(anonymousPage.getByRole("heading", { name: "Sign in" })).toBeVisible();
+    await expect(anonymousPage.getByRole("heading", { name: /North Pole/ })).toBeVisible();
 
     // Set group to allow public lists
     await new UserMenu(page).manageGroup().then((p) => p.allowPublicLists());
@@ -50,7 +50,7 @@ test("public registry list", async ({ page, userData, anonymousPage }) => {
 
     // Navigate to the list in a private window
     await anonymousPage.goto("/");
-    await expect(anonymousPage.getByRole("heading", { name: "Sign in" })).toBeVisible();
+    await expect(anonymousPage.getByRole("heading", { name: /North Pole/ })).toBeVisible();
 
     // Navigate to the list in a private window
     await anonymousPage.goto(listPage.getUrl());

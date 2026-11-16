@@ -16,6 +16,8 @@
         error?: boolean;
         value?: string | null | undefined;
         strengthMeter?: boolean;
+        /** Whether the password is shown as plain text. Bindable so the login snowman can peek. */
+        visible?: boolean;
     }
 
     let {
@@ -27,6 +29,7 @@
         error = false,
         value = $bindable(),
         strengthMeter = false,
+        visible = $bindable(false),
         ...restProps
     }: Props = $props();
     const t = getFormatter();
@@ -37,8 +40,6 @@
             zxcvbn = await init();
         }
     });
-
-    let visible = $state(false);
 
     const meterLookup = ["bg-error-500", "bg-error-500", "bg-warning-500", "bg-success-500", "bg-success-500"];
 
