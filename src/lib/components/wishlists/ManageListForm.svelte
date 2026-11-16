@@ -74,12 +74,15 @@
 >
     <div class="grid grid-cols-12 gap-4 pb-4">
         <div class="col-span-full flex w-full flex-row flex-wrap gap-4">
-            <label class="label w-fit grow" for="name">
-                <span>{$t("wishes.list-name-for-whom")}</span>
+            <div class="label w-fit grow">
+                <label class="label" for="name">
+                    <span>{$t("wishes.list-name-for-whom")}</span>
+                </label>
                 <ClearableInput
                     id="name"
                     name="name"
                     class="input"
+                    aria-describedby="name-helper"
                     autocomplete="off"
                     clearButtonLabel={$t("a11y.clear-name-field")}
                     onValueClear={() => (list.name = null)}
@@ -88,8 +91,8 @@
                     type="text"
                     bind:value={list.name}
                 />
-                <span class="subtext">{$t("wishes.list-name-helper")}</span>
-            </label>
+                <span id="name-helper" class="subtext">{$t("wishes.list-name-helper")}</span>
+            </div>
         </div>
 
         <label class="label col-span-full flex flex-col md:col-span-4" for="iconColor">
