@@ -13,15 +13,22 @@
     const dismissed = new LocalStorage("householdIntroDismissed", false);
 </script>
 
+{#snippet steps(cls: string)}
+    <ul class="space-y-1 {cls}">
+        <li>{$t("wishes.household-intro-own")}</li>
+        <li>{$t("wishes.household-intro-claim")}</li>
+    </ul>
+{/snippet}
+
 {#if firstVisit}
     <div class="card preset-tonal-primary border-primary-500 mb-4 border p-6 text-center" data-testid="household-intro">
         <p class="pb-2 text-xl font-bold md:text-2xl">{$t("wishes.household-intro-title")}</p>
-        <p class="md:text-lg">{$t("wishes.household-intro-body")}</p>
+        {@render steps("md:text-lg")}
     </div>
 {:else if !dismissed.current}
     <div data-testid="household-intro">
         <Alert noicon title={$t("wishes.household-intro-title")} type="info">
-            {$t("wishes.household-intro-body")}
+            {@render steps("")}
             {#snippet actions(buttonVariant)}
                 <button class="btn btn-sm {buttonVariant}" onclick={() => (dismissed.current = true)}>
                     {$t("wishes.household-intro-dismiss")}

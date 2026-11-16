@@ -6,6 +6,8 @@
 
     interface ListWithCounts extends Partial<Pick<List, "id" | "name" | "icon" | "iconColor" | "hideOwner">> {
         owner: Pick<User, "name" | "username" | "picture">;
+        /** Picture matched to the list's name (see $lib/server/list-avatars); replaces the icon. */
+        avatarUrl?: string | null;
         itemCount?: number;
         claimedCount?: number;
         unapprovedCount?: number;
@@ -64,7 +66,11 @@
             class="text-surface-50 flex aspect-square w-12 items-center justify-center overflow-hidden rounded-full font-semibold md:w-14"
             class:bg-primary-500={!iconColor}
         >
-            <iconify-icon class="text-2xl" icon={"ion:" + (list.icon ?? "gift")}></iconify-icon>
+            {#if list.avatarUrl}
+                <img class="size-full object-cover" alt="" src={list.avatarUrl} />
+            {:else}
+                <iconify-icon class="text-2xl" icon={"ion:" + (list.icon ?? "gift")}></iconify-icon>
+            {/if}
         </div>
         <div class="flex flex-col gap-1">
             <span class="text-primary-900-100 line-clamp-2 text-xl font-bold" data-testid="list-name">

@@ -5,6 +5,7 @@ import { getActiveMembership } from "$lib/server/group-membership";
 import { getConfig } from "$lib/server/config";
 import { decodeMultiValueFilter } from "$lib/server/sort-filter-util";
 import { requireLogin } from "$lib/server/auth";
+import { avatarUrlFor, getAvatarFiles } from "$lib/server/list-avatars";
 
 export const load = (async ({ url }) => {
     const user = requireLogin();
@@ -141,7 +142,7 @@ export const load = (async ({ url }) => {
         }
     });
 
-    const [myLists, otherLists] = await Promise.all([userListsQuery, otherListsQuery]);
+    const [myLists, otherLists, avatarFiles] = await Promise.all([userListsQuery, otherListsQuery, getAvatarFiles()]);
 
     const users = [
         {
@@ -168,6 +169,7 @@ export const load = (async ({ url }) => {
                     name: list.name,
                     icon: list.icon,
                     iconColor: list.iconColor,
+                    avatarUrl: avatarUrlFor(avatarFiles, list.name),
                     hideOwner: list.hideOwner,
                     owner: list.owner,
                     claimedCount: undefined,
@@ -194,6 +196,7 @@ export const load = (async ({ url }) => {
                     name: list.name,
                     icon: list.icon,
                     iconColor: list.iconColor,
+                    avatarUrl: avatarUrlFor(avatarFiles, list.name),
                     hideOwner: list.hideOwner,
                     owner: list.owner,
                     claimedCount,

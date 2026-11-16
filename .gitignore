@@ -27,3 +27,6 @@ family.json
 
 # Real family data for the dev seed (see prisma/seed-dev.example.json)
 prisma/seed-dev.json
+
+# Real family avatar images for lists (served at runtime, see src/lib/server/list-avatars.ts)
+/images/

@@ -170,6 +170,20 @@ leaving it unused. Settings (#6) are only written if they aren't set yet, so re-
 change made in the app; the script says when it leaves a different value alone. To add someone later,
 add them to `family.json` and re-run. `family.json` is in both `.gitignore` and `.dockerignore`.
 
+**Setup script vs. dev seed.** There are two ways to fill a database with households. Only the setup
+script is meant for the real site; the dev seed is for clicking around locally with sample data.
+
+|                    | `prisma/seed-dev.ts` (dev / testing)                           | `pnpm family:setup` (real use)                                                     |
+| ------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Input              | `prisma/seed-dev.json` (falls back to `seed-dev.example.json`) | `family.json` (see `family.example.json`)                                          |
+| Passwords          | Everyone uses `password`                                       | A random temporary password per household, printed once                            |
+| Lists              | Pre-filled with sample gifts and claims                        | One empty list per family member                                                   |
+| Other              | —                                                              | Creates the family group, sets up email addresses and applies the settings from #6 |
+| In the prod image? | No, `.dockerignore` keeps it out                               | Yes, it's built to run inside the prod container                                   |
+
+Both data files are git-ignored because they hold real names. When the family changes (someone added
+or removed), update both files so local testing matches the real site.
+
 ### 5. Only admins can create groups ✅
 
 There's only one group, so creating groups is limited to admins.

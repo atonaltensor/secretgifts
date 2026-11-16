@@ -21,3 +21,4 @@ dev-dist
 family.json
 prisma/seed-dev.ts
 prisma/seed-dev*.json
+images/
