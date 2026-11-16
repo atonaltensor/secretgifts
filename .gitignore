@@ -30,3 +30,6 @@ prisma/seed-dev.json
 
 # Real family avatar images for lists (served at runtime, see src/lib/server/list-avatars.ts)
 /images/
+
+# temporary first-time passwords
+.passwords

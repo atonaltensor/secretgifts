@@ -302,6 +302,16 @@ docker/secretgifts/
 3. **Reverse proxy:** Control Panel → Login Portal → Advanced → Reverse Proxy → Create, once for each
    name. Source: HTTPS, `www.doucettes.org` (then `doucettes.org`), port 443. Destination: HTTP,
    `localhost`, port 9000. Then assign the certificate to both hostnames under Certificate → Settings.
+4. **Firewall:** if the NAS firewall is on with a final "deny all" rule, it must also allow Docker's
+   own networks, or the app can't look up shop websites and auto-fill from a link fails. Control
+   Panel → Security → Firewall → Edit Rules → Create. Ports: All. Source IP: Subnet `172.16.0.0`,
+   mask `255.240.0.0`. Action: Allow. Drag it **above** the final deny rule.
+    - That range (172.16.0.0–172.31.255.255) is where Docker creates every project's private
+      network, and each project gets a new one. A rule for a single network (e.g. `172.24.0.0/16`)
+      only covers projects that already exist, so the next new project fails again.
+    - It opens nothing to the outside: only Docker's internal networks use these addresses, as long
+      as the home network itself uses `192.168.x.x` or `10.x.x.x`.
+    - The website itself needs only ports 80 and 443 (TCP) allowed from outside.
 
 **One main address.** Logins and forms only work at the exact `ORIGIN` address,
 `https://www.doucettes.org`. The bare domain is redirected there by the app itself: the compose
@@ -345,6 +355,32 @@ redirect on its own, so it simply sends both names to port 9000.
   Back up `family.json` and the avatars somewhere too, since they aren't in git.
 - **Testing a production build locally:** the compose file only downloads the published image. To
   try changes before pushing, build and run the image yourself (see `.devcontainer/README.md`).
+
+### Troubleshooting
+
+- **Auto-fill from a link fails; the log shows `getaddrinfo EAI_AGAIN <shop website>`.** The
+  container can't look up web addresses. On the NAS this was the firewall blocking the project's
+  Docker network (see step 3.4). Check from Container → `wishlist-prod` → Terminal:
+  `getent hosts www.amazon.com` should print an address. Changing DNS servers (`dns:` in the compose
+  file) doesn't help when the firewall is the cause.
+- **The first start takes several minutes.** On an empty database the app applies all of its
+  database migrations (the whole history of its database layout) one at a time, and each one waits
+  for slow disk writes on the NAS. Later starts skip them and take seconds. The passwords are printed
+  after the migrations, just before `Listening on http://0.0.0.0:3000`.
+- **No passwords in the log.** Wait for `Listening on …` first. If there's still no
+  `$ tsx prisma/family-setup.ts family.json` line, `family.json` wasn't there at first start: check
+  in File Station that it's a file, not an empty folder Docker created in its place (see step 2).
+- **A container named `<numbers>_wishlist-prod` that Container Manager can't stop ("Container
+  undefined does not exist").** A recreate (Stop → Build) didn't finish its last step: the new
+  container runs under a temporary name and the site still works. Over SSH (`sudo -i`), check with
+  `docker ps -a | grep wishlist-prod`, then give it its real name:
+  `docker rename <numbers>_wishlist-prod wishlist-prod`. Don't delete it: it's the one serving the
+  site.
+- **Log noise you can ignore:** requests for `/wp-admin/…` or `/xmlrpc.php` are bots probing for
+  WordPress, and `/service-worker.js` 404s come from browsers that visited an older app on the same
+  address. Neither affects the site.
+- **Exported logs contain the temporary passwords.** Delete any downloaded copy of the container log
+  once the passwords are saved somewhere safe.
 
 ## Implementation notes
 
