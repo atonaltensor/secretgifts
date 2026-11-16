@@ -12,6 +12,7 @@
         "lint": "prettier --check . --experimental-cli && eslint .",
         "format": "prettier --write . --experimental-cli",
         "db:patch": "tsx prisma/patches/index.ts",
+        "family:setup": "tsx prisma/family-setup.ts",
         "test": "playwright test",
         "test:build": "docker compose -f tests/docker/docker-compose.yaml build",
         "test:setup": "playwright install --with-deps chromium"

@@ -1,0 +1,12 @@
+{
+    "group": "Doucettes",
+    "households": [
+        {
+            "username": "doucettes",
+            "name": "The Doucettes",
+            "email": "doucettes@example.com",
+            "admin": true,
+            "members": ["Mike", "Sarah", "Emma"]
+        }
+    ]
+}

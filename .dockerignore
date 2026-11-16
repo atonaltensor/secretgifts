@@ -10,9 +10,14 @@ templates/*.mjml
 uploads/
 data/
 prisma/*.db
+prisma/*.db-*
 tests/
 test-results/
 playwright*
 .github
 .vscode
 dev-dist
+# Never bake real family data or dev-only seed data into the image
+family.json
+prisma/seed-dev.ts
+prisma/seed-dev*.json

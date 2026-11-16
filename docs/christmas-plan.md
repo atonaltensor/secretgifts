@@ -112,7 +112,7 @@ A banner at the top of every page: **"🎁 Lists lock December 1 — add your wi
 - **Banner only.** It reminds people but doesn't stop them editing lists after December 1.
   Enforcing the lock would be a separate, larger change.
 
-### 4. Pre-filling households and family members (setup script)
+### 4. Pre-filling households and family members (setup script) ✅
 
 **Decision: a one-time setup script (option A).** We won't use personalised invite links.
 
@@ -154,6 +154,22 @@ A banner at the top of every page: **"🎁 Lists lock December 1 — add your wi
 }
 ```
 
+**Running it.** Copy `family.example.json` to `family.json` and fill it in. Then:
+
+- Locally: `pnpm family:setup` (or `pnpm family:setup path/to/family.json`).
+- In the production container, after its first start:
+
+    ```sh
+    docker cp family.json wishlist-prod:/tmp/family.json
+    docker exec -e DATABASE_URL=file:/usr/src/app/data/prod.db wishlist-prod pnpm family:setup /tmp/family.json
+    docker exec wishlist-prod rm /tmp/family.json
+    ```
+
+**As built:** a fresh database's empty "Default" group is renamed to the family group instead of
+leaving it unused. Settings (#6) are only written if they aren't set yet, so re-running never undoes a
+change made in the app; the script says when it leaves a different value alone. To add someone later,
+add them to `family.json` and re-run. `family.json` is in both `.gitignore` and `.dockerignore`.
+
 ### 5. Only admins can create groups ✅
 
 There's only one group, so creating groups is limited to admins.
@@ -163,7 +179,7 @@ There's only one group, so creating groups is limited to admins.
 - **UI:** hide "Create group" in the nav menu (`GroupSubMenu.svelte`) from non-admins. The
   admin page (`/admin/groups`) is already admin-only.
 
-### 6. Settings (no code)
+### 6. Settings (no code) ✅
 
 The setup script applies these settings. They're listed here for reference:
 

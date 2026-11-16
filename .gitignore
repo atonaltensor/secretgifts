@@ -21,3 +21,9 @@ src/lib/generated/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Real family names and emails for `pnpm family:setup` (see family.example.json)
+family.json
+
+# Real family data for the dev seed (see prisma/seed-dev.example.json)
+prisma/seed-dev.json

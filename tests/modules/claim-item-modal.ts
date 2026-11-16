@@ -7,7 +7,7 @@ export class ClaimItemModal extends Modal {
 
     constructor(page: Page) {
         super(page, { submitButtonText: "I'll get this" });
-        this.quantityField = this.modal.getByLabel("Enter the quantity to claim");
+        this.quantityField = this.modal.getByLabel("How many will you get?");
         this.claimButton = this.modal.getByRole("button", { name: "I'll get this" });
     }
 
