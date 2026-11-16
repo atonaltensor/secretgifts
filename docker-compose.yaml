@@ -24,6 +24,8 @@ services:
         environment:
             # Must be the exact address people visit, or logins and forms are rejected.
             ORIGIN: https://www.doucettes.org
+            # The reverse proxy also sends the bare domain here; redirect it to the www address above.
+            REDIRECT_HOSTS: doucettes.org
             TOKEN_TIME: 72
             DEFAULT_CURRENCY: USD
             LOG_LEVEL: info

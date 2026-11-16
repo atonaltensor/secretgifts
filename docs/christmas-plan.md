@@ -294,17 +294,24 @@ docker/secretgifts/
 
 ### 3. Set up the address and HTTPS (once)
 
-1. **DNS and router:** point `www.doucettes.org` at your home's public IP (or a Synology DDNS name),
-   and forward ports 80 and 443 on the router to the NAS.
-2. **Certificate:** Control Panel → Security → Certificate → Add → Let's Encrypt, for
-   `www.doucettes.org`.
-3. **Reverse proxy:** Control Panel → Login Portal → Advanced → Reverse Proxy → Create.
-   Source: HTTPS, `www.doucettes.org`, port 443. Destination: HTTP, `localhost`, port 9000. Then
-   assign the certificate to this hostname under Certificate → Settings.
+1. **DNS and router:** point both `doucettes.org` and `www.doucettes.org` at your home's public IP
+   (or a Synology DDNS name), and forward ports 80 and 443 on the router to the NAS.
+2. **Certificate:** Control Panel → Security → Certificate → Add → Let's Encrypt. Domain name:
+   `www.doucettes.org`; Subject Alternative Name: `doucettes.org`. One certificate must cover both
+   names, or visitors to the bare domain get a security warning before they can be redirected.
+3. **Reverse proxy:** Control Panel → Login Portal → Advanced → Reverse Proxy → Create, once for each
+   name. Source: HTTPS, `www.doucettes.org` (then `doucettes.org`), port 443. Destination: HTTP,
+   `localhost`, port 9000. Then assign the certificate to both hostnames under Certificate → Settings.
 
-**The address must match.** Logins and forms only work at the exact `ORIGIN` address. If people might
-type `doucettes.org` without `www`, set up a redirect to `https://www.doucettes.org` at the DNS
-provider rather than serving the site on both names.
+**One main address.** Logins and forms only work at the exact `ORIGIN` address,
+`https://www.doucettes.org`. The bare domain is redirected there by the app itself: the compose
+file sets `REDIRECT_HOSTS: doucettes.org`, and the container's Caddy server (`Caddyfile`) answers
+those requests with a permanent redirect to the same page on `www`. Synology's reverse proxy can't
+redirect on its own, so it simply sends both names to port 9000.
+
+- **Check it after deploying:** open `https://doucettes.org/lists`. The address bar should change to
+  `https://www.doucettes.org/...`. If it doesn't, the reverse proxy isn't passing the original
+  address through to the app. The site still works at `www`; only the redirect is missing.
 
 ### 4. Create the project (once)
 

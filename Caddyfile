@@ -4,6 +4,13 @@
 }
 
 :3280 {
+    # Optional: send other names for the site to the main address in ORIGIN, keeping the path.
+    # e.g. REDIRECT_HOSTS=doucettes.org with ORIGIN=https://www.doucettes.org sends
+    # https://doucettes.org/lists/abc to https://www.doucettes.org/lists/abc. Space-separate several
+    # names. When it isn't set, the placeholder name below matches nothing, so nothing is redirected.
+    @redirect_host host {$REDIRECT_HOSTS:redirect-hosts.invalid}
+    redir @redirect_host {$ORIGIN}{uri} permanent
+
     @static {
 		file
 		path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.webp
