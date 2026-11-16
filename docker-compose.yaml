@@ -11,7 +11,8 @@ services:
         pull_policy: always
         restart: unless-stopped
         ports:
-            - 3280:3280
+            # NAS port 9000 (where the reverse proxy sends traffic) -> the app's port 3280 inside the container.
+            - 9000:3280
         volumes:
             # The database. Back this folder up.
             - ./data:/usr/src/app/data

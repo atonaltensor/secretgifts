@@ -251,7 +251,7 @@ a Container Manager project. Nothing is built on the NAS and no SSH is needed. H
   `.dockerignore` keeps out `family.json`, the seed data and the avatars. It does include the site
   title with the family surname, which is already in the public repo.
 - **The NAS runs it.** A Container Manager project uses `docker-compose.yaml`, which downloads that
-  image, runs it as `wishlist-prod` on port 3280 and sets `ORIGIN` to the live address.
+  image, runs it as `wishlist-prod` on the NAS's port 9000 (the app's port 3280 inside the container) and sets `ORIGIN` to the live address.
 - **Households are created on start.** If `family.json` is next to the compose file, the container
   runs `family:setup` (#4) every time it starts. That's safe because existing households and lists
   are skipped. If the file has a mistake, the error goes to the log and the site starts anyway.
@@ -299,7 +299,7 @@ docker/secretgifts/
 2. **Certificate:** Control Panel → Security → Certificate → Add → Let's Encrypt, for
    `www.doucettes.org`.
 3. **Reverse proxy:** Control Panel → Login Portal → Advanced → Reverse Proxy → Create.
-   Source: HTTPS, `www.doucettes.org`, port 443. Destination: HTTP, `localhost`, port 3280. Then
+   Source: HTTPS, `www.doucettes.org`, port 443. Destination: HTTP, `localhost`, port 9000. Then
    assign the certificate to this hostname under Certificate → Settings.
 
 **The address must match.** Logins and forms only work at the exact `ORIGIN` address. If people might
