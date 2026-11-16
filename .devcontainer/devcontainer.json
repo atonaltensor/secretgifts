@@ -1,0 +1,79 @@
+// Dev container for secretgifts (SvelteKit + Prisma/SQLite) with Claude Code.
+// Docs: https://containers.dev/implementors/json_reference/
+{
+    "name": "secretgifts",
+
+    // Node 24 on Debian bookworm, matching the "node ^24" engine in package.json.
+    // The full (non-slim) image already includes build-essential, python3 and
+    // openssl, which better-sqlite3 and Prisma need.
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
+
+    "features": {
+        // Claude Code CLI (+ the VS Code extension)
+        "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+        // GitHub CLI, handy for Claude Code when working with PRs and issues
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        // Docker CLI wired to the host's Docker daemon, for the Playwright e2e
+        // suite (`pnpm test`), which starts the app with
+        // `docker compose -f tests/docker/docker-compose.yaml`
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    },
+
+    // The e2e compose file runs the app with `network_mode: host`, i.e. on the
+    // Docker host's network. Putting this container on the same network lets
+    // Playwright reach it at localhost:3280 (works on Linux and Docker Desktop).
+    "runArgs": ["--network=host"],
+
+    "remoteUser": "node",
+
+    "mounts": [
+        // Keep Claude Code login, settings and history across container rebuilds
+        "source=secretgifts-claude-config-${devcontainerId},target=/home/node/.claude,type=volume",
+        // node_modules in a volume: much faster on macOS/Windows, and keeps
+        // Linux-native binaries (sharp, better-sqlite3) away from the host
+        "source=secretgifts-node-modules-${devcontainerId},target=${containerWorkspaceFolder}/node_modules,type=volume",
+        // pnpm content-addressable store, so rebuilds don't re-download everything
+        "source=secretgifts-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume"
+    ],
+
+    "containerEnv": {
+        "CLAUDE_CONFIG_DIR": "/home/node/.claude",
+        "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+        "PRISMA_HIDE_UPDATE_MESSAGE": "1",
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+    },
+
+    // Optional: pass an API key through from your host instead of logging in
+    // with /login inside the container.
+    // "remoteEnv": { "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}" },
+
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+    "forwardPorts": [5173, 4173, 3280],
+    "portsAttributes": {
+        "5173": { "label": "Vite dev server (pnpm dev)", "onAutoForward": "notify" },
+        "4173": { "label": "Vite preview", "onAutoForward": "silent" },
+        "3280": { "label": "Wishlist (production / e2e)", "onAutoForward": "silent" }
+    },
+
+    "customizations": {
+        "vscode": {
+            // Mirrors .vscode/extensions.json, plus ESLint
+            "extensions": [
+                "anthropic.claude-code",
+                "svelte.svelte-vscode",
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint",
+                "bradlc.vscode-tailwindcss",
+                "prisma.prisma",
+                "lokalise.i18n-ally",
+                "vunguyentuan.vscode-postcss"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    }
+}
