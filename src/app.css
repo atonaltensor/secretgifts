@@ -3,6 +3,7 @@
 @import "@skeletonlabs/skeleton-svelte";
 @import "./styles/font.css";
 @import "./wishlist.css";
+@import "./christmas.css";
 @import "./styles/list.css";
 @import "./styles/toast.css";
 @import "./styles/loading.css";

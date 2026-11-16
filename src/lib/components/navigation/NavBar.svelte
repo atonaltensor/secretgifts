@@ -1,5 +1,6 @@
 <script lang="ts">
-    import logo from "$lib/assets/logo.png";
+    import logo from "$lib/assets/logo.svg";
+    import { SITE_TITLE } from "$lib/christmas";
     import { page } from "$app/state";
     import NavMenu from "./NavMenu/NavMenu.svelte";
     import { isInstalled } from "$lib/stores/is-installed";
@@ -20,14 +21,14 @@
 
 {#snippet wishlistHeader()}
     <a class="flex flex-row items-center gap-x-2" href="/">
-        <img class="size:h-12 aspect-square size-10 object-scale-down" alt="Wishlist Logo" src={logo} />
+        <img class="size:h-12 aspect-square size-10 object-scale-down" alt="" src={logo} />
         <span
             class={[
-                "text-primary-950-50 text-2xl font-bold md:text-3xl",
+                "text-primary-950-50 text-lg leading-tight font-bold sm:text-2xl md:text-3xl",
                 groups && groups.length > 1 ? "hidden sm:block" : "block"
             ]}
         >
-            Wishlist
+            {SITE_TITLE}
         </span>
     </a>
 {/snippet}

@@ -11,6 +11,9 @@ export const PUT: RequestHandler = async ({ request }) => {
     const user = await requireLoginOrError();
     const $t = await getFormatter();
 
+    // Only admins can create groups (christmas-plan #5)
+    if (user.roleId !== Role.ADMIN) error(403, $t("errors.not-authorized"));
+
     const data = await request.json();
 
     if (!data.name) error(400, $t("errors.must-specify-group-name-in-body"));

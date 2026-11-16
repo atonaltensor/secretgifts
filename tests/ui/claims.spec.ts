@@ -97,7 +97,8 @@ test("claim unlimited item", async ({ page: ownerPage, userData: owner, addition
     });
 });
 
-test("claim item on own list", async ({ page: ownerPage, userData: owner, additionalPage: claimerPage }) => {
+// Family registry hides the "not for me" / "allow owner to claim" settings (docs/christmas-plan.md, section 2).
+test.skip("claim item on own list", async ({ page: ownerPage, userData: owner, additionalPage: claimerPage }) => {
     await test.step("create item", async () => {
         const ownerLists = new ListsPage(ownerPage);
         await ownerLists.goto();

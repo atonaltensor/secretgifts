@@ -159,6 +159,7 @@ export const load = (async ({ url }) => {
     ];
 
     return {
+        householdListCount: myLists.length,
         myLists: myLists
             .filter((list) => userIdFilter.length === 0 || userIdFilter.includes(list.owner.id))
             .map((list) => {

@@ -15,6 +15,8 @@
     import { navItems } from "$lib/components/navigation/navigation";
     import { setFormatter, setLocale } from "$lib/i18n";
     import Toaster from "$lib/components/toaster/Toaster.svelte";
+    import DeadlineBanner from "$lib/components/DeadlineBanner.svelte";
+    import { SITE_TITLE } from "$lib/christmas";
 
     const { data, children }: LayoutProps = $props();
 
@@ -41,7 +43,13 @@
 
     afterNavigate((params) => {
         showNavigationLoadingBar = false;
-        documentTitle = document?.title;
+        // Pages set their own <title>; show it as the heading, and add the site name in the browser tab.
+        const tabSuffix = ` · ${SITE_TITLE}`;
+        let pageTitle = document.title;
+        if (pageTitle === SITE_TITLE) pageTitle = "";
+        else if (pageTitle.endsWith(tabSuffix)) pageTitle = pageTitle.slice(0, -tabSuffix.length);
+        documentTitle = pageTitle;
+        document.title = pageTitle ? pageTitle + tabSuffix : SITE_TITLE;
         disabled = titleDisabledUrls.find((url) => page.url.pathname.match(url)) !== undefined;
         if (params.type !== "popstate" && params.to?.url.pathname !== params.from?.url.pathname) {
             const elemPage = document.querySelector("#page");
@@ -114,6 +122,9 @@
     </header>
 
     <main id="main" class="h-full min-h-screen px-4 py-4 md:px-12 lg:px-32 xl:px-56">
+        {#if data.user}
+            <DeadlineBanner locale={data.locale} />
+        {/if}
         {#if !disabled && documentTitle}
             <h1 class="h1 pb-2 md:pb-4">{documentTitle}</h1>
         {/if}

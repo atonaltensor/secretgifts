@@ -5,6 +5,7 @@ import { exec } from "child_process";
 import { env } from "process";
 import { promisify } from "util";
 import type { UserConfig } from "vite";
+import { SITE_SHORT_TITLE, SITE_TITLE, THEME_COLOR } from "./src/lib/christmas.ts";
 
 // Get current tag/commit and last commit date from git
 const pexec = promisify(exec);
@@ -22,10 +23,10 @@ const config: UserConfig = {
         SvelteKitPWA({
             registerType: "autoUpdate",
             manifest: {
-                name: "Wishlist",
-                short_name: "Wishlist",
+                name: SITE_TITLE,
+                short_name: SITE_SHORT_TITLE,
                 description: "Christmas wishlist you can share with the whole family.",
-                theme_color: "#423654",
+                theme_color: THEME_COLOR,
                 icons: [
                     {
                         src: "/android-chrome-192x192.png",

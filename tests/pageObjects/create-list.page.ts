@@ -8,7 +8,7 @@ export class CreateListPage extends BasePage {
 
     constructor(page: Page) {
         super(page, "/lists/create");
-        this.header = page.getByRole("heading", { name: "Create List" });
+        this.header = page.getByRole("heading", { name: "Add a Family Member" });
         this.listForm = new ListForm(page);
     }
 

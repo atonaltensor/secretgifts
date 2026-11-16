@@ -56,7 +56,8 @@ test("change list name", async ({ page }) => {
     await list.assertName(newListName);
 });
 
-test("hide owner removes the owner from the list card", async ({ page, userData }) => {
+// Family registry hides the "Hide owner" setting (docs/christmas-plan.md, section 2).
+test.skip("hide owner removes the owner from the list card", async ({ page, userData }) => {
     const listsPage = new ListsPage(page);
     await listsPage.goto();
 

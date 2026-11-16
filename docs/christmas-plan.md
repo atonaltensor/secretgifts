@@ -16,7 +16,9 @@ Christmas gift registry. Decisions are recorded here before any code is written.
 
 ## Decisions
 
-### 0. Festive theme and branding
+✅ = implemented.
+
+### 0. Festive theme and branding ✅
 
 - **Title:** replace "Wishlist" with **"Hollys' Christmas 2026"** in the top-left of the nav bar
   (`src/lib/components/navigation/NavBar.svelte:30`) and the mobile drawer
@@ -24,38 +26,40 @@ Christmas gift registry. Decisions are recorded here before any code is written.
   (`vite.config.ts`). Put the title in one constant so changing the year is a one-line edit.
 - **Colors:** add a new Skeleton theme, `src/christmas.css`, alongside `src/wishlist.css`, and
   switch `data-theme` in `src/app.html`. Palette:
-  - primary: deep Christmas red
-  - secondary: evergreen green
-  - tertiary: gold, for accents and "Most wanted"
-  - surface: warm cream (light mode) and deep pine/charcoal (dark mode)
+    - primary: deep Christmas red
+    - secondary: evergreen green
+    - tertiary: gold, for accents and "Most wanted"
+    - surface: warm cream (light mode) and deep pine/charcoal (dark mode)
 
-  Check both light and dark modes for contrast.
+    Check both light and dark modes for contrast.
+
 - **Logo/favicon:** swap the logo in the nav (`static/` and `assets/`) for a festive one, such as a
   wrapped present or an ornament.
 - **Whimsy:** keep it light so the site stays usable on phones.
-  - Gentle snowfall on the home page. Make it CSS-only, respect `prefers-reduced-motion`, and
-    allow it to be turned off.
-  - A "🎄 N days until Christmas" countdown on the home page.
-  - Festive empty states, e.g. *"No wishes yet — the elves are standing by."*
-  - Small festive confetti or a sparkle when someone taps "I'll get this".
+    - Gentle snowfall on the home page. Make it CSS-only, respect `prefers-reduced-motion`, and
+      allow it to be turned off.
+    - A "🎄 N days until Christmas" countdown on the home page.
+    - Festive empty states, e.g. _"No wishes yet — the elves are standing by."_
+    - Small festive confetti or a sparkle when someone taps "I'll get this".
+    - Turning the snow off pops up a speech bubble for 3 seconds: _"Why would you stop the snow? ❄️"_
 
-### 1. Friendlier wording
+### 1. Friendlier wording ✅
 
 Changes go in `src/i18n/en.json` only. Other languages keep their upstream text, which matters
 little because the family uses English. Editing only the English file also keeps our diff small,
 so upstream and Weblate updates still merge cleanly.
 
-| Current | New |
-| --- | --- |
-| Claim | **I'll get this** |
-| Unclaim | **Never mind** |
-| Claimed | **Someone's getting this** |
-| Claimed by {name} | **{name} is getting this** |
-| Claims (nav / `/claims` page) | **My shopping list** |
-| Purchased / Mark item as purchased | **Bought ✓** / **I bought it** |
-| Most wanted | **Top of my list ⭐** |
-| Lists / My Lists | **Family / Our household** (see #2) |
-| Create List | **Add a family member** (see #2) |
+| Current                            | New                                 |
+| ---------------------------------- | ----------------------------------- |
+| Claim                              | **I'll get this**                   |
+| Unclaim                            | **Never mind**                      |
+| Claimed                            | **Someone's getting this**          |
+| Claimed by {name}                  | **{name} is getting this**          |
+| Claims (nav / `/claims` page)      | **My shopping list**                |
+| Purchased / Mark item as purchased | **Bought ✓** / **I bought it**      |
+| Most wanted                        | **Top of my list ⭐**               |
+| Lists / My Lists                   | **Family / Our household** (see #2) |
+| Create List                        | **Add a family member** (see #2)    |
 
 The full list of strings to change will be confirmed by searching `en.json` for "claim",
 "purchase" and "list" during implementation.
@@ -67,37 +71,38 @@ person in it: the adults, the spouse and the kids.
 
 **Decision: reuse the existing List model and rename it in the UI. No schema changes.**
 
-- In the UI, a list is presented as a **family member**. List name = person's name ("Emma"); list
+- ✅ In the UI, a list is presented as a **family member**. List name = person's name ("Emma"); list
   icon/color = their avatar.
-- The account's display name is the household ("The Hollys — Mike & Sarah"). List cards then
+- ✅ The account's display name is the household ("The Hollys — Mike & Sarah"). List cards then
   read "Emma · The Hollys".
-- **Create-list form:**
-  - Retitle it "Add a family member" and relabel the name field "Who is this list for?"
-  - Add helper text: "Make one for each person in your household — yourself, your partner, the kids."
-- **Hidden settings:** remove `notForMe`, "hide owner" and "allow self claims" from the
+- ✅ **Create-list form:**
+    - Retitle it "Add a family member" and relabel the name field "Who is this list for?"
+    - Add helper text: "Make one for each person in your household — yourself, your partner, the kids."
+- ✅ **Hidden settings:** remove `notForMe`, "hide owner" and "allow self claims" from the
   create/manage forms. They stay at their defaults (all **off**), so the forms stay simple.
-- **No spoilers between households (decided):** with `notForMe` off and the group setting
-  `claims.showForOwner` off, a household never sees what *other* households have claimed for any
+- ✅ **No spoilers between households (decided):** with `notForMe` off and the group setting
+  `claims.showForOwner` off, a household never sees what _other_ households have claimed for any
   of its members. Parents can't see claims on their kids' lists, and spouses can't see claims on
   each other's. Hiding `notForMe` from the form stops anyone switching it on by accident.
 - **Home page:** group lists by household, so you see the Hollys' members together, then the
   next household's, and so on. Hide or label the "My Lists" section as "Our household".
 
-- **Landing-page help text:** after login, users land on `/lists` (`src/routes/lists/+page.svelte`).
+- ✅ **Landing-page help text:** after login, users land on `/lists` (`src/routes/lists/+page.svelte`).
   Add a note at the top:
-  > 🎄 **Add a list for each person in your household** — yourself, your partner, and each of the
-  > kids. Other households will see these lists and secretly pick gifts from them.
 
-  Show it as a large, friendly card while the household has no lists of its own. After that, show
-  a smaller line the user can dismiss; the dismissal is remembered in browser storage.
+    > 🎄 **Add a list for each person in your household** — yourself, your partner, and each of the
+    > kids. Other households will see these lists and secretly pick gifts from them.
 
-**Known limitation of shared household logins:** surprises *within* a household can't be tracked in
+    Show it as a large, friendly card while the household has no lists of its own. After that, show
+    a smaller line the user can dismiss; the dismissal is remembered in browser storage.
+
+**Known limitation of shared household logins:** surprises _within_ a household can't be tracked in
 the app. Everyone in a household sees the same thing, so if Mom claims Dad's gift, Dad sees it
 too, or nobody in the household sees it. **Accepted:** spoilers within a
-household are fine, and gifts between household members are tracked offline. Surprises *between*
+household are fine, and gifts between household members are tracked offline. Surprises _between_
 households work fully.
 
-### 3. Deadline banner
+### 3. Deadline banner ✅
 
 A banner at the top of every page: **"🎁 Lists lock December 1 — add your wishes!"**
 
@@ -113,9 +118,9 @@ A banner at the top of every page: **"🎁 Lists lock December 1 — add your wi
 
 - New command `pnpm family:setup` (`prisma/family-setup.ts`), in the style of the existing
   `pnpm db:patch`. It reads `family.json` and creates:
-  - the **"Hollys"** group
-  - **4 household accounts**, each with a temporary password
-  - the **11 family-member lists**, named and assigned to the right household
+    - the **"Hollys"** group
+    - **4 household accounts**, each with a temporary password
+    - the **11 family-member lists**, named and assigned to the right household
 - **Safe to re-run:** the script skips anything that already exists and never overwrites changes
   people have made in the app.
 - **Your household is the admin.** The household marked `"admin": true` in `family.json` gets the
@@ -136,20 +141,20 @@ A banner at the top of every page: **"🎁 Lists lock December 1 — add your wi
 
 ```json
 {
-  "group": "Hollys",
-  "households": [
-    {
-      "username": "hollys",
-      "name": "The Hollys",
-      "email": "hollys@example.com",
-      "admin": true,
-      "members": ["Mike", "Sarah", "Emma"]
-    }
-  ]
+    "group": "Hollys",
+    "households": [
+        {
+            "username": "hollys",
+            "name": "The Hollys",
+            "email": "hollys@example.com",
+            "admin": true,
+            "members": ["Mike", "Sarah", "Emma"]
+        }
+    ]
 }
 ```
 
-### 5. Only admins can create groups
+### 5. Only admins can create groups ✅
 
 There's only one group, so creating groups is limited to admins.
 
@@ -163,11 +168,16 @@ There's only one group, so creating groups is limited to admins.
 The setup script applies these settings. They're listed here for reference:
 
 - `claims.showForOwner`: **off**. This is what keeps claims secret between households (see #2).
-- `claims.showName`: **on**, so households can see who's getting what for *other* households and
+- `claims.showName`: **on**, so households can see who's getting what for _other_ households and
   avoid duplicate gifts.
 - `enableSignup`: **off**. `enableDefaultListCreation`: **off** (see #4).
 - Optional: "surprise" suggestion mode, so other households can add a gift to someone's list that
   the list owner never sees. Decide later.
+
+### 7. Only admins can change the language ✅
+
+The family uses English, so the "Language" option in the avatar menu (`NavMenu.svelte`) is hidden
+from non-admins. UI only: the language is just a display preference, so the server isn't locked down.
 
 ### Not in scope (parked ideas)
 

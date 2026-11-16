@@ -1,0 +1,64 @@
+{
+    "households": [
+        {
+            "username": "admin",
+            "name": "Alex",
+            "admin": true,
+            "members": [
+                {
+                    "name": "Alex",
+                    "items": [
+                        ["Gardening gloves", "$18"],
+                        ["Candle set", "$30"]
+                    ]
+                }
+            ]
+        },
+        {
+            "username": "hollys",
+            "name": "The Hollys — Sam & Jordan",
+            "members": [
+                {
+                    "name": "Sam",
+                    "items": [
+                        ["Cast iron skillet", "$45"],
+                        ["Wool socks", "$20"]
+                    ]
+                },
+                {
+                    "name": "Jordan",
+                    "items": [
+                        ["Yoga mat", "$60"],
+                        ["Cookbook", "$35"]
+                    ]
+                },
+                {
+                    "name": "Riley",
+                    "items": [
+                        ["Remote control car", "$45"],
+                        ["Dinosaur book", "$12"]
+                    ]
+                }
+            ]
+        },
+        {
+            "username": "parks",
+            "name": "The Parks — Morgan & Casey",
+            "members": [
+                {
+                    "name": "Morgan",
+                    "items": [
+                        ["Scarf", "$40"],
+                        ["Board game", "$50"]
+                    ]
+                },
+                { "name": "Casey", "items": [["Coffee grinder", "$90"]] }
+            ]
+        }
+    ],
+    "claims": [
+        ["parks", "hollys", "Sam", 0],
+        ["hollys", "parks", "Morgan", 1],
+        ["admin", "hollys", "Riley", 0]
+    ]
+}

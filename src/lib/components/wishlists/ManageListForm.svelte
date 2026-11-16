@@ -40,15 +40,7 @@
         editing?: boolean;
     }
 
-    const {
-        list: list_,
-        persistButtonName,
-        listMode,
-        allowsPublicLists,
-        claimsVisibleToOwner,
-        groupId,
-        editing = false
-    }: Props = $props();
+    const { list: list_, persistButtonName, listMode, allowsPublicLists, groupId, editing = false }: Props = $props();
     const t = getFormatter();
     const formId: string = $props.id();
 
@@ -83,7 +75,7 @@
     <div class="grid grid-cols-12 gap-4 pb-4">
         <div class="col-span-full flex w-full flex-row flex-wrap gap-4">
             <label class="label w-fit grow" for="name">
-                <span>{$t("auth.name")}</span>
+                <span>{$t("wishes.list-name-for-whom")}</span>
                 <ClearableInput
                     id="name"
                     name="name"
@@ -91,11 +83,12 @@
                     autocomplete="off"
                     clearButtonLabel={$t("a11y.clear-name-field")}
                     onValueClear={() => (list.name = null)}
-                    placeholder={$t("wishes.wishes-for", { values: { listOwner: list.owner.name } })}
+                    placeholder={$t("wishes.list-name-placeholder")}
                     showClearButton={() => list.name !== null}
                     type="text"
                     bind:value={list.name}
                 />
+                <span class="subtext">{$t("wishes.list-name-helper")}</span>
             </label>
         </div>
 
@@ -144,43 +137,9 @@
             </div>
         {/if}
 
-        <div class="col-span-full">
-            <Checkbox name="hideOwner" bind:checked={list.hideOwner}>
-                <span>{$t("wishes.hide-owner")}</span>
-                {#snippet description()}
-                    {$t("wishes.list-hide-owner-description")}
-                {/snippet}
-            </Checkbox>
-        </div>
-
-        <div class="col-span-full">
-            <Checkbox name="notForMe" bind:checked={list.notForMe}>
-                <span>{$t("wishes.list-not-for-me")}</span>
-                {#snippet description()}
-                    <span>
-                        {$t("wishes.list-not-for-me-description")}
-                    </span>
-                {/snippet}
-            </Checkbox>
-        </div>
-
-        <div class="col-span-full">
-            <Checkbox
-                name="allowSelfClaims"
-                disabled={!claimsVisibleToOwner || list.notForMe}
-                bind:checked={list.allowSelfClaims}
-            >
-                <span>{$t("wishes.list-allow-self-claims")}</span>
-                {#snippet description()}
-                    <span>{$t("wishes.list-allow-self-claims-description")}</span>
-                    {#if !claimsVisibleToOwner}
-                        <span class="text-invalid italic">
-                            {$t("wishes.list-allow-self-claims-description-helper-text")}
-                        </span>
-                    {/if}
-                {/snippet}
-            </Checkbox>
-        </div>
+        <!-- Family registry: "hide owner", "this list is for someone else" and "allow owner to claim"
+             are intentionally not offered. They stay off so households never see what other
+             households have picked for them. See docs/christmas-plan.md (section 2). -->
 
         <div class="col-span-full">
             <label class="label mb-1" for="description">

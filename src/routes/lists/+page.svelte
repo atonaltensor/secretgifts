@@ -3,6 +3,8 @@
     import { fade } from "svelte/transition";
     import { hash, hashItems, viewedItems } from "$lib/stores/viewed-items";
     import ListCard from "$lib/components/ListCard.svelte";
+    import HouseholdIntro from "$lib/components/HouseholdIntro.svelte";
+    import ChristmasCountdown from "$lib/components/christmas/ChristmasCountdown.svelte";
     import { goto } from "$app/navigation";
     import ListFilterChip from "$lib/components/wishlists/chips/ListFilterChip.svelte";
     import empty from "$lib/assets/no_wishes.svg";
@@ -24,6 +26,12 @@
         return currentHash !== viewedHash;
     };
 </script>
+
+<ChristmasCountdown />
+
+{#if data.householdListCount !== undefined}
+    <HouseholdIntro firstVisit={data.householdListCount === 0} />
+{/if}
 
 <div class="flex flex-wrap-reverse items-start justify-between gap-2 pb-4 print:hidden">
     <ListFilterChip {users} />

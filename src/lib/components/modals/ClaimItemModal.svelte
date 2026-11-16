@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { celebrate } from "$lib/celebrate";
     import { SystemUsersAPI } from "$lib/api/users";
     import type { ItemOnListDTO } from "$lib/dtos/item-dto";
     import { ListItemAPI } from "$lib/api/lists";
@@ -113,6 +114,7 @@
         const resp = await listItemAPI.claim(userId, quantity);
 
         if (resp.ok) {
+            celebrate();
             closeAndToast($t("wishes.claimed-item", { values: { claimed: true } }));
         } else {
             const respData = await resp.json();
@@ -134,6 +136,7 @@
         const resp = await listItemAPI.claimPublic(publicUserId, quantity);
 
         if (resp.ok) {
+            celebrate();
             closeAndToast($t("wishes.claimed-item", { values: { claimed: true } }));
         } else {
             const respData = await resp.json();

@@ -6,9 +6,9 @@ export class ClaimItemModal extends Modal {
     private readonly claimButton: Locator;
 
     constructor(page: Page) {
-        super(page, { submitButtonText: "Claim" });
+        super(page, { submitButtonText: "I'll get this" });
         this.quantityField = this.modal.getByLabel("Enter the quantity to claim");
-        this.claimButton = this.modal.getByRole("button", { name: "Claim" });
+        this.claimButton = this.modal.getByRole("button", { name: "I'll get this" });
     }
 
     async setQuantity(quantity: number) {

@@ -30,7 +30,7 @@ export class ItemForm {
         this.noLimitCheckbox = page.getByLabel("No limit");
         this.uploadImageField = page.getByLabel("Upload Image");
         this.uploadImageButton = page.getByRole("button", { name: "Select File" });
-        this.mostWantedCheckbox = page.getByLabel("Most wanted");
+        this.mostWantedCheckbox = page.getByLabel("Top of my list");
         this.imageUrlField = page.getByLabel("Image URL");
         this.notesField = page.getByLabel("Notes");
         this.notesWriteTab = page.getByRole("tab", { name: "Write" });

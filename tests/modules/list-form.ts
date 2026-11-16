@@ -18,7 +18,7 @@ export class ListForm {
         this.saveButton = page.getByRole("button", { name: "Save" });
         this.deleteButton = page.getByRole("button", { name: "Delete" });
         this.cancelButton = page.getByRole("button", { name: "Cancel" });
-        this.nameField = page.getByLabel("Name", { exact: true });
+        this.nameField = page.getByLabel("Who is this list for?", { exact: true });
         this.publicCheckbox = page.getByLabel("Public", { exact: true });
         this.hideOwnerCheckbox = page.getByLabel("Hide Owner", { exact: true });
         this.notForMeCheckbox = page.getByLabel("This list is for someone else", { exact: true });

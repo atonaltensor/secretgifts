@@ -36,8 +36,8 @@ export class ItemCard {
         this.deleteButton = card.getByRole("button", { name: "Delete" });
         this.approveButton = card.getByRole("button", { name: "Approve" });
         this.denyButton = card.getByRole("button", { name: "Deny" });
-        this.claimButton = card.getByRole("button", { name: "Claim", exact: true });
-        this.unclaimButton = card.getByRole("button", { name: "Unclaim", exact: true });
+        this.claimButton = card.getByRole("button", { name: "I'll get this", exact: true });
+        this.unclaimButton = card.getByRole("button", { name: "Never mind", exact: true });
     }
 
     async assertDefaultImage() {
@@ -86,7 +86,7 @@ export class ItemCard {
     }
 
     async assertClaimedQuantity(quantity: number) {
-        await expect(this.quantityClaimed).toHaveText(`${quantity} claimed`);
+        await expect(this.quantityClaimed).toHaveText(`${quantity} spoken for`);
         return this;
     }
 
@@ -121,12 +121,12 @@ export class ItemCard {
 
     async claimSingle() {
         await this.claimButton.click();
-        await new Toast(this.card.page()).waitForToastWithText("Claimed item");
+        await new Toast(this.card.page()).waitForToastWithText("You're getting this");
     }
 
     async unclaimSingle() {
         await this.unclaimButton.click();
-        await new Toast(this.card.page()).waitForToastWithText("Unclaimed item");
+        await new Toast(this.card.page()).waitForToastWithText("no longer getting this");
     }
 
     async claimAmount(quantity: number) {
@@ -136,7 +136,7 @@ export class ItemCard {
             .visible()
             .then((m) => m.setQuantity(quantity))
             .then((m) => m.submit());
-        await new Toast(this.card.page()).waitForToastWithText("Claimed item");
+        await new Toast(this.card.page()).waitForToastWithText("You're getting this");
         return this;
     }
 

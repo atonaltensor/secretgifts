@@ -14,7 +14,7 @@ export class ListsPage extends BasePage {
     constructor(page: Page) {
         super(page, "/lists");
         this.header = page.getByRole("heading", { name: "Lists" });
-        this.createButton = page.getByRole("button", { name: "Create List" });
+        this.createButton = page.getByRole("button", { name: "Add a Family Member" });
         this.listContainer = page.getByTestId("list-container");
         this.listItems = this.listContainer.locator("a.card");
         this.listFilterChip = new Chip(page, "list-filter");

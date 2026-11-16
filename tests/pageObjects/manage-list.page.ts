@@ -17,7 +17,7 @@ export class ManageListPage extends BasePage {
         const id = props?.id ?? new URL(page.url()).pathname.split("/").at(-1);
         super(page, `/lists/${id}/manage`);
         this.listId = id!;
-        this.header = page.getByRole("heading", { name: "Manage List" });
+        this.header = page.getByRole("heading", { name: "Edit List" });
         this.listForm = new ListForm(page);
     }
 

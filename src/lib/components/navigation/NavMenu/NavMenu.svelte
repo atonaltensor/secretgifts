@@ -78,24 +78,26 @@
                                 </li>
                             {/if}
                             <hr class="hr pb-1" />
-                            <li>
-                                <ChangeLanguageModal currentLanguage={user.preferredLanguage}>
-                                    {#snippet trigger(props)}
-                                        <button
-                                            {...props}
-                                            class="list-option w-full"
-                                            onclick={(e) => {
-                                                closeMenu();
-                                                props.onclick?.(e);
-                                            }}
-                                            type="button"
-                                        >
-                                            <iconify-icon icon="ion:language"></iconify-icon>
-                                            <p>{$t("general.language")}</p>
-                                        </button>
-                                    {/snippet}
-                                </ChangeLanguageModal>
-                            </li>
+                            {#if user.roleId == Role.ADMIN}
+                                <li>
+                                    <ChangeLanguageModal currentLanguage={user.preferredLanguage}>
+                                        {#snippet trigger(props)}
+                                            <button
+                                                {...props}
+                                                class="list-option w-full"
+                                                onclick={(e) => {
+                                                    closeMenu();
+                                                    props.onclick?.(e);
+                                                }}
+                                                type="button"
+                                            >
+                                                <iconify-icon icon="ion:language"></iconify-icon>
+                                                <p>{$t("general.language")}</p>
+                                            </button>
+                                        {/snippet}
+                                    </ChangeLanguageModal>
+                                </li>
+                            {/if}
                             <li>
                                 <div class="flex w-full justify-around pt-1">
                                     <LightSwitch />
