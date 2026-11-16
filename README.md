@@ -1,196 +1,107 @@
 <div align="center">
-<img src="./src/lib/assets/logo.png" width="200" />
-<h1>Wishlist</h1>
-<p> A sharable wishlist for your friends and family </p>
+<img src="./src/lib/assets/logo.svg" width="140" alt="" />
+<h1>Secret Gifts</h1>
+<p>The Doucettes' family Christmas gift registry 🎄</p>
+<p><a href="https://www.doucettes.org">www.doucettes.org</a></p>
 </div>
 
-## About
+## What this is
 
-Wishlist is a self-hosted wishlist application that you can share with your friends and family. You no longer have to wonder what to get your parents for the holidays, simply check their wishlist and claim any available item. With a simple user interface, even the grandparents can get involved!
+Every year our extended family tries to coordinate Christmas gifts across several households. Who
+wants what? Has someone already bought it? Secret Gifts is a small private website that answers both,
+without spoiling any surprises.
 
-## Features
+It's a customized fork of [Wishlist](https://github.com/cmintey/wishlist) by Carter Mintey, a
+self-hosted wishlist app. Wishlist does the hard parts: lists, claims, product details fetched from a
+link, and mobile support. This fork makes it feel like our family's Christmas.
 
-- [x] Claim items on a wishlist
-- [x] Check off claimed items as purchased
-- [x] Automatically fetch product data from URL
-- [x] Invite users via email (SMTP configuration required)
-- [x] Options for [suggestions](#suggestions)
-- [x] PWA Support
-- [x] Multiple groups
-- [x] Registry Mode (single list)
-- [x] OAuth Authentication
+## How it works for the family
 
-<p float="left">
-    <img src="./assets/homepage-desktop.png" width="74%" />
-    <img src="./assets/homepage-mobile.png" width="25%" />
-    Multiple groups for friends and family
-</p>
+- **Each household gets one login.** Inside it, there's a list for every person in that household.
+  The lists are set up ahead of time, so nobody has to create anything.
+- **Add gifts you'd like to your own lists.** Paste a link and the app fills in the name, price and
+  picture.
+- **Claim gifts you plan to buy from other people's lists.** It's a secret: the person whose list
+  it is never sees what's been claimed. Other households can, so two people don't buy the same
+  thing.
+- **"My Shopping List"** collects everything you've claimed, so you can tick items off as you buy them.
 
-<p float="left">
-    <img src="./assets/my-wishes-mobile.png" width="49%" />
-    <img src="./assets/wishes-mobile.png" width="49%" />
-    Add items to your list so other's can claim them
-</p>
+## What's different from Wishlist
 
-<img src="./assets/wish-form.png" />
-Create a wish from a URL, or manually fill in the details
+- **Festive look:** red and green theme, Christmas logo and icons, falling snow (with an off switch),
+  a countdown to Christmas, and a little sparkle when you claim a gift.
+- **Households and family members:** lists are shown as people, with each person's avatar on a
+  portrait-style card, laid out in a grid so everyone fits on one screen.
+- **A deadline banner** reminding everyone when lists lock (December 1).
+- **Friendlier wording** throughout, a welcome note explaining how it works, and a playful login page.
+- **No spoilers:** claims stay hidden from the list owner, and options that could reveal them are
+  turned off.
+- **Admin only:** only the admin can create groups or change the language.
+- **One-step family setup:** `pnpm family:setup` creates every household, list and setting from a
+  single `family.json` file.
+- **Hands-off deploys:** GitHub builds the image, and the Synology NAS runs it.
 
-## Getting Started
+The full story, including each decision and why, is in
+[docs/christmas-plan.md](docs/christmas-plan.md).
 
-Getting started is simple with Docker Compose.
+## Keeping family details private
 
-> [!NOTE]
-> A [Helm chart is available](https://github.com/fox1e-dev/wishlist-charts) via a community contributor  
-> (This is a fork of the [inactive original helm chart](https://github.com/mddeff/wishlist-charts))
+This repo is public, so **real family data never goes in git or the Docker image**:
 
-Create a `docker-compose.yaml` file:
+| File                        | What it holds                                               | Example to copy                |
+| --------------------------- | ----------------------------------------------------------- | ------------------------------ |
+| `family.json`               | Households, emails and family members for the live site     | `family.example.json`          |
+| `prisma/seed-dev.json`      | The same households, with sample gifts, for local testing   | `prisma/seed-dev.example.json` |
+| `images/christmas_avatars/` | One picture per person, named after their list (`emma.svg`) | —                              |
 
-```compose.yml
-services:
-  wishlist:
-    container_name: wishlist
-    image: ghcr.io/cmintey/wishlist:latest
-    ports:
-      - 3280:3280
-    volumes:
-      - ./uploads:/usr/src/app/uploads  # This is where user image uploads will be stored
-      - ./data:/usr/src/app/data        # This is where the sqlite database will be stored
-    environment:
-      # ORIGIN: https://wishlist.example.com
-      ORIGIN: http://192.168.2.10:3280 # The URL your users will be connecting to
-      TOKEN_TIME: 72 # hours until signup and password reset tokens expire
+All three are listed in `.gitignore` and `.dockerignore`. When writing code comments or docs, use
+the made-up names from the example files (Emma, Mike, Sarah), never real ones.
+
+## Running the live site
+
+The site runs on our Synology NAS as a Container Manager project:
+
+1. Every push to `main` builds a new image and publishes it to
+   `ghcr.io/atonaltensor/secretgifts:main`
+   ([workflow](.github/workflows/build_push.yml)).
+2. On the NAS, the project folder holds `docker-compose.yaml`, `family.json` and the avatars.
+   Container Manager downloads the image and runs it.
+3. On start, the container creates any households and lists from `family.json` that don't exist yet.
+4. The NAS's reverse proxy serves it over HTTPS at www.doucettes.org.
+
+Step-by-step setup, updating, rolling back and backups are covered in
+[Deploying to the NAS](docs/christmas-plan.md#deploying-to-the-nas).
+
+## Working on it
+
+The easiest way to start is the VS Code dev container: open the repo and choose **Reopen in
+Container**. [.devcontainer/README.md](.devcontainer/README.md) covers setup, checks, the end-to-end
+tests and building a production image locally.
+
+```sh
+pnpm dev                              # app at http://localhost:5173
+pnpm exec tsx prisma/seed-dev.ts      # sample households to log in as (password: "password")
+pnpm check && pnpm lint               # types, formatting and lint
+pnpm test                             # Playwright end-to-end tests
 ```
 
-Then simply run `docker compose up -d`.
+[DEVELOPMENT.md](DEVELOPMENT.md) has the general (non-container) setup from upstream.
 
-You can now connect to your application at `http://<host>:3280`.
+## Getting ready for next Christmas
 
-> [!NOTE]
-> Set the `ORIGIN` environment variable to the url you will be connecting to, otherwise you will experience issues
+Most of what changes each year lives in one file, [`src/lib/christmas.ts`](src/lib/christmas.ts):
 
-### Environment Variables
+- `SITE_TITLE` and `SITE_SHORT_TITLE`: update the year.
+- `LISTS_LOCK_DATE`: the date the deadline banner counts down to.
 
-`ORIGIN`: The URL your users will connect to e.g. `https://wishlist.domain.com`, `http://192.168.2.10:3280`. **Note**, if this value is an IP address, then it must include the exposed port of the application
+Then update `family.json` for anyone new, push to `main`, and update the project on the NAS. Last
+year's lists and claims stay in the database. Clear them out in the app, or start the project with
+an empty `data/` folder for a fresh start.
 
-`TOKEN_TIME`: The amount of time (hours) that signup and password reset tokens are valid for
+## Credits and license
 
-`DEFAULT_CURRENCY`: The global default currency (ISO-Code) to be used. Currency can still be changed on a per-item basis
-
-`MAX_IMAGE_SIZE`: Maxinum image size that can be uploaded (in bytes). Defaults to 5000000 (5MB)
-
-### Running behind a reverse proxy
-
-It is recommended to run Wishlist behind a reverse proxy. Currently, Wishlist does not support running on a different subpath (i.e. `https://domain.com/wishlist`).
-
-#### Nginx / Synology NAS
-
-There is a [known issue](https://github.com/cmintey/wishlist/issues/170) when running behind Nginx or Synology NAS (which uses Nginx under the hood) proxies. It is recommended to set the following properties in your Nginx configuration:
-
-```Text
-proxy_buffer_size   128k;
-proxy_buffers   4 256k;
-proxy_busy_buffers_size   256k;
-```
-
-## Groups
-
-Wishlist has support for multiple wishlist groups. For example, you can have one group for friends and one for family. The wishes on these lists will be completely separate. You can switch between groups using the menu when you click on your profile picture.
-
-Currently, anyone can create a group. The group creator is automatically added as a "manager" of the group. A Group Manager can invite users to Wishlist and add/remove existing users to the group they manage. The Group Manager can also delete the group. An Admin will have the same permissions as the Group Manager.
-
-## Registry Mode
-
-Wishlist has the ability to turn a group into a Registry. In this mode, only a single user can be part of the group and there is only one list. The owner of the group can add items to the list as normal and then get a public link to share out to friends and family. Users accessing this link will not need to sign in or create an account. Public users can view the items on the list and also claim items. In order to claim an item, the user just needs to enter some identifier (email for example) and can optionally add their name. Currently there is no way to un-claim items that are claimed in this manner.
-
-To activate this mode, go to the admin panel of your group and change the mode from "Wishlist" to "Registry".
-
-## Configuration
-
-There are several configuration options in the admin panel.
-
-### Public Signup
-
-By default, anyone with the url can signup for an account. You can turn this off and have it be invite only.
-
-If you have [SMTP enabled](#smtp), then you can enter a user's email and an invite link will be sent there. Otherwise, an invite link will be generated for you to copy and send to the user manually.
-
-### Suggestions
-
-Suggestions are enabled by default. With suggestions enabled, you will be able to add items to another person's wishlist. There are a few different suggestion methods.
-
-#### ▶ Approval Required
-
-In this mode, the suggested item will need to be approved by the suggestee in order for it to show up on their wishlist. If the item is approved, it can be edited and deleted by the suggestee at any time.
-
-#### ▶ Auto Approval
-
-In this mode, the suggested item will be automatically approved and added to the wishlist. Similar to the previous method, the item can be edited and delted by the suggestee at any time.
-
-#### ▶ Suprise Me
-
-In this mode, the suggested item is automatically approved and added to the wishlist. **However**, the item only shows for everyone except for the suggestee. The suggestee cannot see and therefore cannot edit or delete the item once it has been added.
-
-### SMTP
-
-SMTP does not need to be configured for the app to function. SMTP enables inviting users via email and the forgot password flow. Without SMTP, you can still manually generate invite links and forgot password links.
-
-### External Authentication
-
-#### OAuth via OpenID Connect
-
-_since v0.42.0_
-
-Wishlist can be configured to authenticate users against any third-party Identity Provider which support the OpenID Connect specification. This includes providers such as Authelia, Authentik, Keycloak, and Google.
-
-To configure your provider for authentication, navigate to the Wishlist Administration Settings page. You will be required to provide the Issuer URL (the URL of your Identity Provider), the Client ID, and the Client Secret. All other configurations are optional. Any and all role-based access should be handled with your Identity Provider.
-
-The redirect URL to specify within your IdP will look like `https://<my_wishlist_domain>/login`
-
-> [!NOTE]
-> The first user to be created will need to be created with credentials via the setup wizard.
-
-#### Proxy / Header
-
-> [!WARNING]
-> When header authentication is enabled, Wishlist makes no assumptions about the validity of the headers. It is up to you to have your proxy properly configured. An improperly configured proxy **could allow anyone** to gain access to the application by forging the headers.
-
-If you have a reverse proxy you want to use to login your users, you do it via our proxy authentication method. To configure this method, your proxy must send HTTP headers containing the name, username and email for the logged in user.
-You configure this using environment variables.
-
-`HEADER_AUTH_ENABLED`: Enable proxy authentication
-
-`HEADER_USERNAME`: The name of the headers that contains the username of the user
-
-`HEADER_NAME`: The name of the headers that contains the full name of the user
-
-`HEADER_EMAIL`: The name of the headers that contains the email of the user
-
-## Add items using a Bookmarklet
-
-Wishlist supports adding items via a bookmarklet. Whenever you're on a product page that you want to add to Wishlist, you can click on your bookmarklet to open Wishlist in a new tab and instantly start creating a new item.
-
-To create a bookmarklet, paste the following code into a [bookmarklet generator site](https://caiorss.github.io/bookmarklet-maker/). Change the two variables that have comments, generate, and save the bookmarklet.
-
-```js
-var url = document.URL.endsWith("/") ? document.URL.slice(0, -1) : document.URL;
-var wishlist = "http://localhost:5173"; // host of your wishlist instance
-var listId = "xyz"; // this is the id of the list you want to add the item to. You can get the id of the list from the URL
-
-var list = "/lists/" + listId;
-var dest = new URL(list + "/create-item", wishlist);
-dest.searchParams.append("redirectTo", list);
-dest.searchParams.append("productUrl", url);
-window.open(dest, "_blank");
-```
-
-## Contributing
-
-Code contributions are always welcome! If you have something in mind that you would like to work on, please open an issue or comment on an existing issue indicating your interest to make sure someone else isn't already working on it and to discuss any implementation details. Open a PR when you feel that it is ready. You can also open a draft PR as soon as you start work to help track progress.
-
-### Translations
-
-Translations are provided by the community and new translations are greatly appreciated. Translations are managed through [Weblate](https://hosted.weblate.org/projects/wishlist/wishlist-web/). With Weblate, you can contribute an entire language, or make suggestions to existing translations. If the language you wish to translate has not been added yet, you can request it [here](https://hosted.weblate.org/new-lang/wishlist/wishlist-web/). The translation strings use ICU Message Syntax which you can reference [here](https://formatjs.github.io/docs/core-concepts/icu-syntax).
-
-**Translation Progress**
-
-![Weblate translation status](https://hosted.weblate.org/widget/wishlist/wishlist-web/horizontal-auto.svg)
+Built on [Wishlist](https://github.com/cmintey/wishlist) by Carter Mintey and its contributors, under
+the MIT License (see [LICENSE](LICENSE)). Everything the original supports still works here, such as
+email invites over SMTP, OpenID Connect sign-in and the bookmarklet. See the
+[upstream README](https://github.com/cmintey/wishlist#readme) for those. Changes are kept small and in
+few places, so updates from upstream can still be merged in.
