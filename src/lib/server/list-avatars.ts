@@ -22,7 +22,7 @@ export const avatarDir = () => path.resolve(env.LIST_AVATAR_DIR || "images/chris
 const normalize = (name: string) =>
     name
         .normalize("NFKD")
-        .replace(/[̀-ͯ]/g, "")
+        .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .replace(/[^a-z0-9]/g, "");
 

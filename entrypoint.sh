@@ -10,4 +10,11 @@ pnpm prisma migrate deploy && \
 pnpm prisma db seed && \
 pnpm db:patch
 
+# Family households and lists (docs/christmas-plan.md #4), when family.json is mounted.
+# Safe on every start: anything that already exists is skipped. Temporary passwords for new
+# households are printed to this log once. A problem here is logged but doesn't stop the site.
+if [ -f family.json ]; then
+    pnpm family:setup family.json || echo "WARNING: family setup failed (see above). Starting the site anyway."
+fi
+
 exec node build

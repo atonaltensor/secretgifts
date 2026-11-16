@@ -157,7 +157,9 @@ A banner at the top of every page: **"🎁 Lists lock December 1 — add your wi
 **Running it.** Copy `family.example.json` to `family.json` and fill it in. Then:
 
 - Locally: `pnpm family:setup` (or `pnpm family:setup path/to/family.json`).
-- In the production container, after its first start:
+- In production it runs automatically every time the container starts, as long as `family.json` is
+  next to `docker-compose.yaml` on the NAS (see "Deploying to the NAS"). To run it by hand in a
+  running container instead:
 
     ```sh
     docker cp family.json wishlist-prod:/tmp/family.json
@@ -241,19 +243,56 @@ Santa draw.
 
 ## Deploying to the NAS
 
-The live site is **https://www.doucettes.org**, running on the Synology NAS with Container Manager.
-`docker-compose.yaml` builds the image from this checkout, runs it as `wishlist-prod` on port 3280,
-and sets `ORIGIN` to the live address. The NAS's reverse proxy handles HTTPS.
+The live site is **https://www.doucettes.org**, running on the Synology NAS (Intel Celeron J3455) as
+a Container Manager project. Nothing is built on the NAS and no SSH is needed. How it fits together:
 
-**Files that aren't in git.** Copy these to the NAS by hand. They hold real names, so they never go
-in the repo or the image:
+- **GitHub builds the image.** On every push to `main`, `.github/workflows/build_push.yml` builds
+  the image and publishes it as `ghcr.io/atonaltensor/secretgifts:main`. It holds no family data:
+  `.dockerignore` keeps out `family.json`, the seed data and the avatars. It does include the site
+  title with the family surname, which is already in the public repo.
+- **The NAS runs it.** A Container Manager project uses `docker-compose.yaml`, which downloads that
+  image, runs it as `wishlist-prod` on port 3280 and sets `ORIGIN` to the live address.
+- **Households are created on start.** If `family.json` is next to the compose file, the container
+  runs `family:setup` (#4) every time it starts. That's safe because existing households and lists
+  are skipped. If the file has a mistake, the error goes to the log and the site starts anyway.
+- **The NAS's reverse proxy handles HTTPS.**
 
-- `family.json`: the households and family members for `pnpm family:setup` (#4).
-- `images/christmas_avatars/`: one picture per family member, named after their list (`emma.svg`,
-  `emma.png`, …). Lists without a matching picture keep their icon. Pictures are read while the app
-  runs, so adding one later needs no rebuild (browsers may cache the old one for up to an hour).
+### 1. Set up GitHub (once)
 
-**First-time setup.**
+1. **Turn on Actions.** On github.com, open the repo's **Actions** tab. If GitHub says workflows are
+   disabled (it does this for repos created as a fork), click the button to enable them.
+2. **Run the first build.** Push to `main`, or in Actions open **Build and Push Docker Image** →
+   **Run workflow** on `main`. Wait for the green check.
+3. **Make the image public.** New images start private, and a private one would make the NAS log in
+   to GitHub. Go to your GitHub profile → **Packages** → **secretgifts** → **Package settings** →
+   **Change visibility** → **Public**.
+4. **Check:** the package page lists a `main` tag, plus a `sha-…` tag for each build.
+
+No secrets or tokens need setting up: the workflow uses GitHub's built-in token. Only `main` is
+published, so pushing other branches doesn't change the live site.
+
+### 2. Stage the files on the NAS (once)
+
+Install **Container Manager** from Package Center if it isn't already; it creates a `docker` shared
+folder. In **File Station**, create this folder and upload the files into it:
+
+```
+docker/secretgifts/
+├── docker-compose.yaml        from the repo
+├── family.json                from your computer (git-ignored)
+├── images/
+│   └── christmas_avatars/     emma.svg, mike.svg, … from your computer (git-ignored)
+├── data/                      create it empty: the database goes here
+└── uploads/                   create it empty: uploaded gift pictures go here
+```
+
+- **`family.json` must be there before the project's first start.** If it's missing, Docker creates
+  an empty _folder_ called `family.json` instead, and setup is skipped. To fix that, delete the
+  folder, upload the file and restart the project.
+- **Avatars:** upload the `.svg` files (or `.png` if there's no SVG), named after each person's list.
+  You can leave out `contact_sheet.png` and `.DS_Store`.
+
+### 3. Set up the address and HTTPS (once)
 
 1. **DNS and router:** point `www.doucettes.org` at your home's public IP (or a Synology DDNS name),
    and forward ports 80 and 443 on the router to the NAS.
@@ -262,76 +301,43 @@ in the repo or the image:
 3. **Reverse proxy:** Control Panel → Login Portal → Advanced → Reverse Proxy → Create.
    Source: HTTPS, `www.doucettes.org`, port 443. Destination: HTTP, `localhost`, port 3280. Then
    assign the certificate to this hostname under Certificate → Settings.
-4. **Code and private files:** clone the repo to the NAS (e.g. `/volume1/docker/secretgifts`) and
-   copy in `family.json` and `images/christmas_avatars/`.
-5. **Build and start** (over SSH, in that folder): `sudo docker compose up -d --build`. The first
-   build takes a while on a NAS. The NAS has an Intel Celeron J3455, which suits the Dockerfile:
-   it targets plain `x86-64` with AVX turned off, which that CPU lacks. If the build runs out of
-   memory, build on another machine instead, copy the image over, and start it without `--build`:
-
-    ```sh
-    docker buildx build --platform linux/amd64 -t secretgifts:prod .
-    docker save secretgifts:prod | ssh <nas> sudo docker load
-    # then on the NAS:
-    sudo docker compose up -d
-    ```
-
-6. **Create the households** with the `family:setup` commands in #4, and save the temporary
-   passwords it prints. They're shown only once.
-7. **Check:** open https://www.doucettes.org, log in as the admin household, and click through.
 
 **The address must match.** Logins and forms only work at the exact `ORIGIN` address. If people might
 type `doucettes.org` without `www`, set up a redirect to `https://www.doucettes.org` at the DNS
 provider rather than serving the site on both names.
 
-**Updating.** `git pull && sudo docker compose up -d --build`. The database and uploads live in
-`./data` and `./uploads` next to the compose file, so they survive rebuilds. Include those two
-folders in the NAS's backups (e.g. Hyper Backup).
+### 4. Create the project (once)
 
-### Later: deploy with Container Manager alone (not done yet)
+1. **Container Manager → Project → Create.**
+2. **Project name:** `secretgifts`. **Path:** `docker/secretgifts`. When Container Manager finds the
+   `docker-compose.yaml` there, choose to use it.
+3. **Web portal:** leave it off. The reverse proxy from step 3 already handles the address.
+4. **Finish.** Container Manager downloads the image and starts the container. The first time takes a
+   few minutes.
+5. **Copy the passwords.** Open **Container → `wishlist-prod` → Log** and find _"Temporary
+   passwords"_. Save them in a password manager and send each household theirs. They're printed only
+   on the first start, and disappear from the log when the container is recreated (e.g. by an
+   update). Households can change their password on the Account page.
+6. **Check:** open https://www.doucettes.org, log in as `admin`, and check that every family member's
+   list is there with their avatar.
 
-The steps above need SSH and a copy of the repo on the NAS. The usual Synology way is to create a
-Container Manager **Project** and upload just a `docker-compose.yaml`. Two changes would allow that.
+### Day to day
 
-**1. Let GitHub build the image.** Container Manager can download images from a registry, or import
-a `.tar` file, but can't easily build from source. The repo already has
-`.github/workflows/build_push.yml` from upstream. It still points at the upstream owner's Docker Hub
-and GHCR accounts, so as it stands it would fail or push to the wrong place. Change it to:
-
-- **Publish to:** `ghcr.io/atonaltensor/secretgifts`, dropping Docker Hub. It uses GitHub's built-in
-  token, so no secrets need setting up.
-- **Build for:** Intel only (`linux/amd64`), for the NAS's J3455. That's faster than also building for ARM.
-- **When:** on every push to `main`, or when started manually.
-
-`docker-compose.yaml` then says `image: ghcr.io/atonaltensor/secretgifts:main`, with no `build:`.
-To update the NAS: push to `main`, then in Container Manager stop the project, pull the new image
-and start it again.
-
-- **Privacy:** the image holds no family data, because `.dockerignore` keeps out `family.json`, the
-  seed data and the avatars. It does include the site title with the family surname, which is
-  already OK for the public repo. The image can be made private on GitHub, but then the NAS has to
-  log in to `ghcr.io` with a GitHub token. Public is simpler.
-- **Without GitHub:** build the image on the Mac
-  (`docker buildx build --platform linux/amd64 -t secretgifts:prod .`), export it with
-  `docker save -o secretgifts.tar secretgifts:prod`, and import it under Container Manager → Image →
-  Import. That works, but has to be repeated for every update.
-
-**2. Run `family:setup` automatically on start.** The script is safe to re-run: it skips households
-and lists that already exist and never overwrites changes made in the app. Add one step to
-`entrypoint.sh`, after the migrations and patches:
-
-- **When it runs:** only if `family.json` is mounted into the container (from next to the compose
-  file on the NAS). The e2e tests and anyone else using the image are unaffected.
-- **If it fails:** the error goes to the log and the site still starts. A typo in `family.json`
-  shouldn't take the site down.
-- **Adding someone later:** edit `family.json` on the NAS and restart the project.
-- **Catch:** the temporary passwords are printed once, on the first start, to the container log
-  (Container Manager → Project → Container → Log). Copy them from there. They stay in the log until
-  the container is recreated, and households should change their password after first login anyway.
-
-**Resulting setup on the NAS:** create a project folder, put `docker-compose.yaml`, `family.json` and
-`images/christmas_avatars/` in it, create the project in Container Manager, then read the passwords
-from the log. DNS, the certificate and the reverse proxy (steps 1–3 above) stay the same.
+- **Updating the site:** push to `main` and wait for the Actions build to go green. Then in Container
+  Manager → Project → `secretgifts`: **Stop**, then **Action → Build**. That downloads the new image
+  (`pull_policy: always`) and recreates the container. The database and uploads are in `data/` and
+  `uploads/`, so they're kept.
+- **Adding a person or household:** download `family.json` in File Station, edit it, upload it again,
+  then stop and start the project. New households' passwords appear in the log. Setup never deletes
+  anything: to remove someone, delete their list or account in the app as admin.
+- **Adding or changing an avatar:** upload it to `images/christmas_avatars/`. No restart is needed,
+  though browsers may show the old picture for up to an hour.
+- **Rolling back:** in `docker-compose.yaml`, change `:main` to an earlier `:sha-…` tag from the
+  package page, upload it, then **Stop** and **Build**. Change it back to `:main` afterwards.
+- **Backups:** include `docker/secretgifts/data` and `docker/secretgifts/uploads` in Hyper Backup.
+  Back up `family.json` and the avatars somewhere too, since they aren't in git.
+- **Testing a production build locally:** the compose file only downloads the published image. To
+  try changes before pushing, build and run the image yourself (see `.devcontainer/README.md`).
 
 ## Implementation notes
 
