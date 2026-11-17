@@ -9,7 +9,7 @@
     import { quintOut } from "svelte/easing";
     import { crossfade } from "svelte/transition";
     import { isInstalled } from "$lib/stores/is-installed";
-    import empty from "$lib/assets/no_wishes.svg";
+    import empty from "$lib/assets/no_wishes_elves.svg";
     import SortBy from "$lib/components/wishlists/chips/SortBy.svelte";
     import { hash, hashItems, viewedItems } from "$lib/stores/viewed-items";
     import { getListViewPreference, initListViewPreference } from "$lib/stores/list-view-preference.svelte";
@@ -344,7 +344,7 @@
 
 {#if items.length === 0}
     <div class="flex flex-col items-center justify-center space-y-4 pt-2">
-        <img class="w-3/4 md:w-1/3" alt={$t("a11y.two-people-looking-in-an-empty-box")} src={empty} />
+        <img class="w-3/4 md:w-1/3" alt={$t("a11y.elves-standing-by-an-empty-box")} src={empty} />
         <p class="text-2xl">{$t("wishes.no-wishes-yet")}</p>
     </div>
 {:else}
@@ -424,7 +424,7 @@
 {#if data.loggedInUser && (data.list.owner.isMe || data.list.isManager || data.suggestionsEnabled)}
     <button
         class={[
-            "preset-tonal btn btn-icon btn-icon-sm md:btn-icon-base inset-ring-surface-200-800 fixed right-4 z-30 size-16 p-0! inset-ring md:right-10 md:bottom-10 md:size-20 print:hidden",
+            "preset-filled-primary-500 btn btn-icon btn-icon-sm md:btn-icon-base fixed right-4 z-30 size-16 p-0! shadow-lg md:right-10 md:bottom-10 md:size-20 print:hidden",
             $isInstalled ? "bottom-24" : "bottom-4"
         ]}
         aria-label="add item"

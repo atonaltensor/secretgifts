@@ -21,6 +21,7 @@
         "save-group-name": "save group name",
         "toggle-manager": "{isManager, select, true {remove} other {add}} {user} as manager",
         "toggle-password-visibility": "toggle password visibility",
+        "elves-standing-by-an-empty-box": "Two elves standing by an empty gift box",
         "two-people-looking-in-an-empty-box": "Two people looking in an empty box",
         "unpurchase": "Mark as not bought yet",
         "upload-profile-image": "upload profile image",
