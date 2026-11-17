@@ -1,5 +1,6 @@
 <script lang="ts">
     import { applyAction, enhance } from "$app/forms";
+    import elfThumbsUp from "$lib/assets/elf_thumbs_up.svg";
     import ItemForm from "$lib/components/wishlists/ItemForm.svelte";
     import type { Item } from "$lib/generated/prisma/client";
     import type { PageProps } from "./$types";
@@ -72,7 +73,7 @@
                 return;
             }
             if (result.type === "redirect") {
-                toaster.info({ description: $t("wishes.item-created") });
+                toaster.info({ description: $t("wishes.item-created"), meta: { image: elfThumbsUp } });
 
                 if (submitter?.id === "submit-stay") {
                     clearFields();

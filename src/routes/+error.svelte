@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import notFoundAsset from "$lib/assets/not_found.svg";
-    import errorAsset from "$lib/assets/error.svg";
-    import unauthorizedAsset from "$lib/assets/unauthorized.svg";
+    import notFoundAsset from "$lib/assets/not_found_elf.svg";
+    import errorAsset from "$lib/assets/error_elf.svg";
+    import unauthorizedAsset from "$lib/assets/unauthorized_elf.svg";
     import { getFormatter } from "$lib/i18n";
 
     type ErrorInfo = {

@@ -3,7 +3,7 @@
     import { flip } from "svelte/animate";
     import type { PageProps } from "./$types";
     import ItemCard from "$lib/components/wishlists/ItemCard/ItemCard.svelte";
-    import noClaims from "$lib/assets/no_claims.svg";
+    import noClaims from "$lib/assets/no_claims_sleigh.svg";
     import type { ItemOnListDTO } from "$lib/dtos/item-dto";
     import { getFormatter } from "$lib/i18n";
     import { getListViewPreference, initListViewPreference } from "$lib/stores/list-view-preference.svelte";
@@ -62,7 +62,7 @@
 
 {#if data.items.length === 0}
     <div class="flex flex-col items-center justify-center space-y-4 pt-4">
-        <img class="w-3/4 md:w-1/3" alt={$t("a11y.a-person-looking-at-an-empty-board")} src={noClaims} />
+        <img class="w-3/4 md:w-1/3" alt={$t("a11y.elf-shrugging-by-an-empty-sleigh")} src={noClaims} />
         <p class="text-2xl">{$t("wishes.nothing-claimed-yet")}</p>
     </div>
 {:else}

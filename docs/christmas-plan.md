@@ -225,6 +225,12 @@ The login page (`src/routes/login/+page.svelte`) is the first thing everyone see
   you press "show password".
 - **Nothing on this page names a household or family member**, because it's visible to anyone with the URL.
 
+### 9. Elves ✅
+
+Elf pictures on empty pages and error pages, an elf that peeks out from behind the + button on an empty list,
+and a thumbs-up elf when you add an item. Every spot, and how to make each one appear, is listed in
+[elves.md](elves.md).
+
 ### Not in scope (parked ideas)
 
 Shopping list totals, a printable shopping list, a gift-wrapped look for bought items, and a Secret

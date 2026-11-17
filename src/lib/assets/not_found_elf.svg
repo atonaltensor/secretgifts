@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560">
+  <defs>
+    <pattern id="stripes" width="16" height="12" patternUnits="userSpaceOnUse">
+      <rect width="16" height="12" fill="#ffffff"/>
+      <rect width="16" height="6" fill="#dc2626"/>
+    </pattern>
+  </defs>
+  <g fill="#cbd5e1">
+    <circle cx="90" cy="70" r="5"/><circle cx="260" cy="40" r="4"/><circle cx="350" cy="150" r="6"/>
+    <circle cx="480" cy="60" r="4"/><circle cx="560" cy="170" r="5"/><circle cx="700" cy="80" r="6"/>
+    <circle cx="750" cy="240" r="4"/><circle cx="60" cy="230" r="4"/><circle cx="170" cy="160" r="3"/>
+    <circle cx="620" cy="30" r="3"/>
+  </g>
+  <g fill="#000000" opacity="0.08">
+    <ellipse cx="270" cy="517" rx="60" ry="8"/>
+    <ellipse cx="500" cy="517" rx="70" ry="10"/>
+  </g>
+  <g>
+    <rect x="262" y="250" width="14" height="265" rx="3" fill="#92400e"/>
+    <path d="M276,270 L380,270 L402,290 L380,310 L276,310 Z" fill="#dc2626"/>
+    <path d="M262,330 L160,330 L138,350 L160,370 L262,370 Z" fill="#16a34a"/>
+    <path d="M276,390 L360,380 L380,398 L362,418 L276,428 Z" fill="#facc15"/>
+    <circle cx="269" cy="248" r="10" fill="#ffffff"/>
+  </g>
+  <g transform="translate(500 515) scale(1.15 1.15)">
+    <path d="M-30,0 L-8,0 L-8,-16 L-26,-16 Q-40,-16 -42,-24 Q-44,-12 -30,0 Z" fill="#7c2d12"/>
+    <path d="M30,0 L8,0 L8,-16 L26,-16 Q40,-16 42,-24 Q44,-12 30,0 Z" fill="#7c2d12"/>
+    <rect x="-24" y="-70" width="16" height="56" fill="url(#stripes)"/>
+    <rect x="8" y="-70" width="16" height="56" fill="url(#stripes)"/>
+    <path d="M-28,-144 L-44,-120" stroke="#15803d" stroke-width="16" stroke-linecap="round" fill="none"/><path d="M28,-144 L44,-120" stroke="#15803d" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M-30,-152 L30,-152 L48,-65 L36,-55 L24,-65 L12,-55 L0,-65 L-12,-55 L-24,-65 L-36,-55 L-48,-65 Z" fill="#15803d"/>
+    <rect x="-41" y="-100" width="82" height="12" fill="#1f2937"/>
+    <rect x="-9" y="-102" width="18" height="16" fill="none" stroke="#facc15" stroke-width="4"/>
+    <polygon points="-34,-150 -24,-138 -12,-150 0,-138 12,-150 24,-138 34,-150 30,-160 -30,-160" fill="#dc2626"/>
+    <g transform="rotate(-6 0 -118)">
+      <rect x="-56" y="-158" width="112" height="76" rx="3" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+      <line x1="-19" y1="-158" x2="-19" y2="-82" stroke="#fcd34d" stroke-width="2"/>
+      <line x1="19" y1="-158" x2="19" y2="-82" stroke="#fcd34d" stroke-width="2"/>
+      <path d="M-44,-96 Q-20,-150 6,-120 T44,-142" stroke="#dc2626" stroke-width="3" stroke-dasharray="6 5" fill="none"/>
+      <path d="M38,-148 l10,10 M48,-148 l-10,10" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+      <g transform="rotate(180 -38 -140)">
+        <circle cx="-38" cy="-140" r="9" fill="none" stroke="#92400e" stroke-width="2"/>
+        <path d="M-38,-148 L-35,-140 L-41,-140 Z" fill="#92400e"/>
+      </g>
+    </g><circle cx="-52" cy="-122" r="8" fill="#f5c6a0"/><circle cx="52" cy="-122" r="8" fill="#f5c6a0"/>
+    <polygon points="-27,-194 -54,-212 -30,-176" fill="#eab08a"/>
+    <polygon points="27,-194 54,-212 30,-176" fill="#eab08a"/>
+    <circle cx="0" cy="-186" r="32" fill="#f5c6a0"/>
+    <circle cx="-17" cy="-176" r="6" fill="#f87171" opacity="0.5"/>
+    <circle cx="17" cy="-176" r="6" fill="#f87171" opacity="0.5"/>
+    <circle cx="-11" cy="-187" r="3.5" fill="#1f2937"/><circle cx="11" cy="-187" r="3.5" fill="#1f2937"/><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" fill="none">
+        <path d="M-17,-198 Q-11,-204 -5,-200"/><path d="M5,-203 Q11,-199 17,-202"/>
+        <path d="M-7,-172 Q-2,-175 3,-172 T11,-173"/>
+      </g>
+    <path d="M-33,-210 Q-12,-268 44,-284 Q18,-252 33,-210 Z" fill="#dc2626"/>
+    <rect x="-37" y="-218" width="74" height="15" rx="7" fill="#16a34a"/>
+    <circle cx="46" cy="-285" r="9" fill="#ffffff"/>
+    <text x="58" y="-232" font-family="Georgia, serif" font-size="44" font-weight="bold" fill="#dc2626">?</text>
+      <text x="76" y="-268" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#16a34a">?</text>
+  </g>
+</svg>

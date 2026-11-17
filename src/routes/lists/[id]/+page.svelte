@@ -10,6 +10,7 @@
     import { crossfade } from "svelte/transition";
     import { isInstalled } from "$lib/stores/is-installed";
     import empty from "$lib/assets/no_wishes_elves.svg";
+    import elfPeek from "$lib/assets/elf_peek.svg";
     import SortBy from "$lib/components/wishlists/chips/SortBy.svelte";
     import { hash, hashItems, viewedItems } from "$lib/stores/viewed-items";
     import { getListViewPreference, initListViewPreference } from "$lib/stores/list-view-preference.svelte";
@@ -432,8 +433,59 @@
     >
         <iconify-icon class="text-xl md:text-2xl" icon="ion:add"></iconify-icon>
     </button>
+
+    <!-- Elf peeking out from behind the add button while the list is empty -->
+    {#if items.length === 0}
+        <div
+            class={[
+                "pointer-events-none fixed right-4 z-20 w-16 md:right-10 md:bottom-[110px] md:w-20 print:hidden",
+                $isInstalled ? "bottom-[152px]" : "bottom-[72px]"
+            ]}
+            aria-hidden="true"
+        >
+            <div
+                class="elf-peek-bubble preset-filled-surface-100-900 rounded-container absolute top-0 right-full mr-1 px-3 py-1 text-sm whitespace-nowrap shadow-md"
+            >
+                {$t("wishes.add-first-wish")}
+            </div>
+            <img class="elf-peek w-full" alt="" src={elfPeek} />
+        </div>
+    {/if}
 {/if}
 
 <svelte:head>
     <title>{listName}</title>
 </svelte:head>
+
+<style>
+    .elf-peek {
+        animation: elf-peek 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 400ms both;
+    }
+    .elf-peek-bubble {
+        animation: elf-bubble 300ms ease-out 1100ms both;
+    }
+    @keyframes elf-peek {
+        from {
+            transform: translateY(85%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+    @keyframes elf-bubble {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .elf-peek,
+        .elf-peek-bubble {
+            animation: none;
+        }
+    }
+</style>
