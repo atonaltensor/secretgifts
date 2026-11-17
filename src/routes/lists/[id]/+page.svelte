@@ -19,6 +19,7 @@
     import { dragHandleZone, type DndZoneAttributes, type Item, type Options } from "svelte-dnd-action";
     import ReorderChip from "$lib/components/wishlists/chips/ReorderChip.svelte";
     import ManageListChip from "$lib/components/wishlists/chips/ManageListChip.svelte";
+    import { Role } from "$lib/schema";
     import ListViewModeChip from "$lib/components/wishlists/chips/ListViewModeChip.svelte";
     import type { ItemOnListDTO } from "$lib/dtos/item-dto";
     import { ItemCreateHandler, ItemDeleteHandler, ItemsUpdateHandler, ItemUpdateHandler } from "$lib/events";
@@ -288,7 +289,10 @@
         {/if}
         {#if data.list.owner.isMe || data.list.isManager}
             <ReorderChip onFinalize={handleReorderFinalize} bind:reordering />
-            <ManageListChip onclick={() => goto(`${new URL(page.url).pathname}/manage`)} />
+            <!-- List settings are admin-only so the list page stays simple for families -->
+            {#if data.user?.roleId === Role.ADMIN}
+                <ManageListChip onclick={() => goto(`${new URL(page.url).pathname}/manage`)} />
+            {/if}
         {/if}
     </div>
 </div>
